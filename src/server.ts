@@ -1,6 +1,6 @@
 import express, { type Express } from 'express'
 import cors from 'cors'
-import routes from './infrastructure/web/routes.ts'
+import routes from './infrastructure/web/routes'
 
 const app: Express = express()
 const port: string | number = process.env.PORT || 3000

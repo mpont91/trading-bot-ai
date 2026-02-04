@@ -6,12 +6,15 @@
   "author": "Marc Pont",
   "type": "module",
   "scripts": {
-    "dev": "node --watch --experimental-strip-types --env-file=.env src/index.ts",
-    "start": "node --experimental-strip-types --env-file=.env src/index.ts",
+    "dev": "tsx watch --env-file=.env src/index.ts",
+    "build": "tsup src/index.ts --format esm --clean",
+    "start": "node --env-file=.env dist/index.js",
+    "check": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint 'src/**/*.{js,ts}'",
-    "lint:fix": "eslint 'src/**/*.{js,ts}' --fix"
+    "lint:fix": "eslint 'src/**/*.{js,ts}' --fix",
+    "script": "tsx --env-file=.env src/scripts/run.ts"
   },
   "dependencies": {
     "@binance/connector-typescript": "^0.3.16",
@@ -26,11 +29,14 @@
     "@eslint/js": "^9.39.2",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "dotenv": "^17.2.3",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "globals": "^17.3.0",
     "prettier": "^3.8.1",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.54.0"
   },
