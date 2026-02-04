@@ -7,9 +7,15 @@ export const binanceSettingsSchema = z.object({
   bottleneckMinTime: z.number().int(),
 })
 
+export const geminiSettingsSchema = z.object({
+  geminiApiKey: z.string(),
+})
+
 export const settingsSchema = z.object({
   binance: binanceSettingsSchema,
+  gemini: geminiSettingsSchema,
 })
 
 export type BinanceSettings = z.infer<typeof binanceSettingsSchema>
+export type GeminiSettings = z.infer<typeof geminiSettingsSchema>
 export type Settings = z.infer<typeof settingsSchema>

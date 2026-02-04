@@ -1,5 +1,5 @@
 import { type Coin } from '../domain/types/coin'
 
-export interface Api {
+export interface Exchange {
   getCoins(): Promise<Coin[]>
 }

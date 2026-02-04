@@ -10,7 +10,7 @@ import Bottleneck from 'bottleneck'
 import { executeWithRateLimit } from './helpers/execute-with-rate-limit'
 import { type BinanceSettings } from '../../domain/types/settings'
 
-export class BinanceSpotApi {
+export class BinanceSpot {
   private readonly client: Spot
   private readonly limiter: Bottleneck
 

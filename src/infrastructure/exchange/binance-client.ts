@@ -1,10 +1,10 @@
 import { type RestTradeTypes } from '@binance/connector-typescript'
-import { type Api } from '../../application/api'
-import { BinanceSpotApi } from './binance-spot-api'
+import { type Exchange } from '../../application/exchange'
+import { BinanceSpot } from './binance-spot'
 import { type Coin } from '../../domain/types/coin'
 
-export class BinanceClientApi implements Api {
-  constructor(private readonly api: BinanceSpotApi) {}
+export class BinanceClient implements Exchange {
+  constructor(private readonly api: BinanceSpot) {}
 
   async getCoins(): Promise<Coin[]> {
     const balances: RestTradeTypes.accountInformationBalances[] = (

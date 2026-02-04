@@ -7,4 +7,7 @@ export const settings: Settings = {
     bottleneckMaxConcurrent: 1,
     bottleneckMinTime: 500,
   },
+  gemini: {
+    geminiApiKey: process.env.GEMINI_API_KEY!,
+  },
 }
