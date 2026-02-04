@@ -1,4 +1,5 @@
 import { type Settings } from '../domain/types/settings'
+import { TimeFrame } from '../domain/types/time-frame'
 
 export const settings: Settings = {
   binance: {
@@ -9,5 +10,26 @@ export const settings: Settings = {
   },
   gemini: {
     geminiApiKey: process.env.GEMINI_API_KEY!,
+  },
+  strategy: {
+    timeFrame: TimeFrame['1h'],
+    technical: {
+      rsi: {
+        period: 14,
+      },
+      macd: {
+        fastPeriod: 12,
+        slowPeriod: 26,
+        signalPeriod: 9,
+      },
+      bollinger: {
+        period: 20,
+        stdDev: 2,
+      },
+      ema: {
+        shortPeriod: 50,
+        longPeriod: 200,
+      },
+    },
   },
 }

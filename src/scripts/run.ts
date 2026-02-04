@@ -1,11 +1,20 @@
 type Fn = (args: string[]) => Promise<void>
 
 const scripts: Record<string, Fn> = {
+  'ai-analyze-market': async () => {
+    await (await import('./ai/ai-analyze-market')).default()
+  },
+  'exchange-get-candles': async (args: string[]) => {
+    await (await import('./exchange/exchange-get-candles')).default(args)
+  },
   'exchange-get-coins': async () => {
     await (await import('./exchange/exchange-get-coins')).default()
   },
-  'ai-analyze-market': async () => {
-    await (await import('./ai/ai-analyze-market')).default()
+  'exchange-get-price': async (args: string[]) => {
+    await (await import('./exchange/exchange-get-price')).default(args)
+  },
+  'technical-calculate': async (args: string[]) => {
+    await (await import('./technical/technical-calculate')).default(args)
   },
 }
 

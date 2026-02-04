@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { timeFrameSchema } from './time-frame'
 
 export const binanceSettingsSchema = z.object({
   binanceApiKey: z.string(),
@@ -11,11 +12,46 @@ export const geminiSettingsSchema = z.object({
   geminiApiKey: z.string(),
 })
 
+const rsiSettingsSchema = z.object({
+  period: z.number().int().positive(),
+})
+
+const macdSettingsSchema = z.object({
+  fastPeriod: z.number().int().positive(),
+  slowPeriod: z.number().int().positive(),
+  signalPeriod: z.number().int().positive(),
+})
+
+const bollingerSettingsSchema = z.object({
+  period: z.number().int().positive(),
+  stdDev: z.number().positive(),
+})
+
+const emaSettingsSchema = z.object({
+  shortPeriod: z.number().int().positive(),
+  longPeriod: z.number().int().positive(),
+})
+
+export const technicalSettingsSchema = z.object({
+  rsi: rsiSettingsSchema,
+  macd: macdSettingsSchema,
+  bollinger: bollingerSettingsSchema,
+  ema: emaSettingsSchema,
+})
+
+export const strategySettingsSchema = z.object({
+  timeFrame: timeFrameSchema,
+  technical: technicalSettingsSchema,
+})
+
 export const settingsSchema = z.object({
   binance: binanceSettingsSchema,
   gemini: geminiSettingsSchema,
+  strategy: strategySettingsSchema,
 })
 
 export type BinanceSettings = z.infer<typeof binanceSettingsSchema>
 export type GeminiSettings = z.infer<typeof geminiSettingsSchema>
+export type TechnicalSettings = z.infer<typeof technicalSettingsSchema>
+export type StrategySettings = z.infer<typeof strategySettingsSchema>
 export type Settings = z.infer<typeof settingsSchema>

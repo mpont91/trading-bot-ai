@@ -1,7 +1,15 @@
-import { type RestTradeTypes } from '@binance/connector-typescript'
-import { type Exchange } from '../../application/exchange'
+import {
+  Interval,
+  RestMarketTypes,
+  type RestTradeTypes,
+} from '@binance/connector-typescript'
+import type { Exchange } from '../../application/exchange'
 import { BinanceSpot } from './binance-spot'
-import { type Coin } from '../../domain/types/coin'
+import type { Coin } from '../../domain/types/coin'
+import { TimeFrame } from '../../domain/types/time-frame'
+import { Candle } from '../../domain/types/candle'
+import { mapDomainToBinanceTimeFrame } from './mappers/time-frame-mapper'
+import { mapBinanceToDomainCandle } from './mappers/candle-mapper'
 
 export class BinanceClient implements Exchange {
   constructor(private readonly api: BinanceSpot) {}
@@ -21,5 +29,21 @@ export class BinanceClient implements Exchange {
     }
 
     return coins
+  }
+
+  async getPrice(symbol: string): Promise<number> {
+    const response: RestMarketTypes.symbolPriceTickerResponse =
+      (await this.api.symbolPriceTicker(
+        symbol,
+      )) as RestMarketTypes.symbolPriceTickerResponse
+    return parseFloat(response.price)
+  }
+
+  async getCandles(symbol: string, timeFrame: TimeFrame): Promise<Candle[]> {
+    const binanceTimeFrame: Interval = mapDomainToBinanceTimeFrame(timeFrame)
+    const response: RestMarketTypes.klineCandlestickDataResponse[] =
+      await this.api.klineCandlestickData(symbol, binanceTimeFrame)
+
+    return response.map(mapBinanceToDomainCandle)
   }
 }
