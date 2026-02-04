@@ -1,0 +1,40 @@
+{
+  "name": "trading-bot-ai",
+  "version": "1.0.0",
+  "description": "Trading bot AI",
+  "license": "ISC",
+  "author": "Marc Pont",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch --experimental-strip-types --env-file=.env src/index.ts",
+    "start": "node --experimental-strip-types --env-file=.env src/index.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint 'src/**/*.{js,ts}'",
+    "lint:fix": "eslint 'src/**/*.{js,ts}' --fix"
+  },
+  "dependencies": {
+    "@binance/connector-typescript": "^0.3.16",
+    "bottleneck": "^2.19.5",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "pm2": "^6.0.14",
+    "technicalindicators": "^3.1.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "globals": "^17.3.0",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.54.0"
+  },
+  "engines": {
+    "node": ">=25.0.0"
+  }
+}
