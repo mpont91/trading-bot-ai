@@ -13,6 +13,7 @@ deploy:
 	$(SSH_CMD) '$(LOAD_NVM_CMD) && cd trading-bot-ai && make production'
 
 check:
+	npm run check && \
 	npm run build && \
 	npm run format:check && \
 	npm run lint

@@ -1,15 +1,15 @@
 type Fn = (args: string[]) => Promise<void>
 
 const scripts: Record<string, Fn> = {
+  'advisor-advice': async (args: string[]) => {
+    await (await import('./advisor/advisor-advice')).default(args)
+  },
   'analyst-calculate': async (args: string[]) => {
     await (await import('./analyst/analyst-calculate')).default(args)
   },
-  'decision-maker-decide': async (args: string[]) => {
-    await (await import('./decision-maker/decision-maker-decide')).default(args)
-  },
-  'decision-repository-save': async (args: string[]) => {
+  'evaluation-repository-save': async (args: string[]) => {
     await (
-      await import('./decision-repository/decision-repository-save')
+      await import('./evaluation-repository/evaluation-repository-save')
     ).default(args)
   },
   'exchange-get-candles': async (args: string[]) => {

@@ -1,6 +1,6 @@
-import { TechnicalAnalysis } from '../../domain/types/technical-analysis'
+import { Analysis } from '../../domain/types/analysis'
 
-export function geminiBuildPrompt(analysis: TechnicalAnalysis): string {
+export function geminiBuildPrompt(analysis: Analysis): string {
   const dataString = JSON.stringify(analysis, null, 2)
 
   return `

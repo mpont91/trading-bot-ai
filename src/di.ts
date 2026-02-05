@@ -3,20 +3,20 @@ import { BinanceClient } from './infrastructure/exchange/binance-client'
 import { ExchangeService } from './domain/services/exchange-service'
 import { settings } from './application/settings'
 import { BinanceSpot } from './infrastructure/exchange/binance-spot'
-import { type DecisionMaker } from './application/decision-maker'
-import { GeminiClient } from './infrastructure/decision-maker/gemini-client'
-import { DecisionMakerService } from './domain/services/decision-maker-service'
+import { type Advisor } from './application/advisor'
+import { GeminiClient } from './infrastructure/advisor/gemini-client'
+import { AdvisorService } from './domain/services/advisor-service'
 import { AnalystService } from './domain/services/analyst-service'
 import { Analyst } from './application/analyst'
 import { TechnicalIndicators } from './infrastructure/analyst/technical-indicators'
-import { DecisionRepository } from './application/repositories/decision-repository'
-import { PrismaDecisionRepository } from './infrastructure/repositories/prisma-decision-repository'
+import { AdviceRepository } from './application/repositories/advice-repository'
+import { PrismaEvaluationRepository } from './infrastructure/repositories/prisma-evaluation-repository'
 
 export class Container {
   private static exchangeService?: ExchangeService
   private static analystService?: AnalystService
-  private static decisionMakerService?: DecisionMakerService
-  private static decisionRepository?: DecisionRepository
+  private static advisorService?: AdvisorService
+  private static adviceRepository?: AdviceRepository
 
   static getSettings() {
     return settings
@@ -33,24 +33,24 @@ export class Container {
   static getAnalystService(): AnalystService {
     if (!this.analystService) {
       const analyst: Analyst = new TechnicalIndicators(
-        settings.strategy.technical,
+        settings.strategy.analyst,
       )
       this.analystService = new AnalystService(analyst)
     }
     return this.analystService
   }
-  static getDecisionMakerService(): DecisionMakerService {
-    if (!this.decisionMakerService) {
-      const decisionMaker: DecisionMaker = new GeminiClient(settings.gemini)
-      this.decisionMakerService = new DecisionMakerService(decisionMaker)
+  static getAdvisorService(): AdvisorService {
+    if (!this.advisorService) {
+      const advisor: Advisor = new GeminiClient(settings.gemini)
+      this.advisorService = new AdvisorService(advisor)
     }
-    return this.decisionMakerService
+    return this.advisorService
   }
 
-  static getDecisionRepository(): DecisionRepository {
-    if (!this.decisionRepository) {
-      this.decisionRepository = new PrismaDecisionRepository()
+  static getAdviceRepository(): AdviceRepository {
+    if (!this.adviceRepository) {
+      this.adviceRepository = new PrismaEvaluationRepository()
     }
-    return this.decisionRepository
+    return this.adviceRepository
   }
 }

@@ -3,7 +3,7 @@ import { ExchangeService } from '../../domain/services/exchange-service'
 import { Candle } from '../../domain/types/candle'
 import { z } from 'zod'
 import { AnalystService } from '../../domain/services/analyst-service'
-import { TechnicalAnalysis } from '../../domain/types/technical-analysis'
+import { Analysis } from '../../domain/types/analysis'
 
 const requestSchema = z.object({
   symbol: z.string(),
@@ -20,7 +20,7 @@ export default async function (args: string[]): Promise<void> {
   const candles: Candle[] = await exchangeService.getCandles(symbol)
 
   const analystService: AnalystService = Container.getAnalystService()
-  const response: TechnicalAnalysis = analystService.calculate(candles)
+  const response: Analysis = analystService.calculate(candles)
 
   console.dir(response, { depth: null })
 }

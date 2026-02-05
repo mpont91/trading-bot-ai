@@ -16,7 +16,7 @@ export const settings: Settings = {
   },
   strategy: {
     timeFrame: TimeFrame['1h'],
-    technical: {
+    analyst: {
       rsi: {
         period: 14,
       },

@@ -34,7 +34,7 @@ const emaSettingsSchema = z.object({
   longPeriod: z.number().int().positive(),
 })
 
-export const technicalSettingsSchema = z.object({
+export const analystSettingsSchema = z.object({
   rsi: rsiSettingsSchema,
   macd: macdSettingsSchema,
   bollinger: bollingerSettingsSchema,
@@ -43,7 +43,7 @@ export const technicalSettingsSchema = z.object({
 
 export const strategySettingsSchema = z.object({
   timeFrame: timeFrameSchema,
-  technical: technicalSettingsSchema,
+  analyst: analystSettingsSchema,
 })
 
 export const settingsSchema = z.object({
@@ -54,6 +54,6 @@ export const settingsSchema = z.object({
 
 export type BinanceSettings = z.infer<typeof binanceSettingsSchema>
 export type GeminiSettings = z.infer<typeof geminiSettingsSchema>
-export type TechnicalSettings = z.infer<typeof technicalSettingsSchema>
+export type AnalystSettings = z.infer<typeof analystSettingsSchema>
 export type StrategySettings = z.infer<typeof strategySettingsSchema>
 export type Settings = z.infer<typeof settingsSchema>
