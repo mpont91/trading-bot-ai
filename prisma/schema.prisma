@@ -18,11 +18,16 @@ enum AdviceAction {
   HOLD
 }
 
+enum OrderSide {
+  BUY
+  SELL
+}
+
 model Evaluation {
   id         Int          @id @default(autoincrement())
   symbol     String
   timeFrame  String
-  price      Float
+  price      Decimal
   action     AdviceAction
   confidence Float
   reasoning  String       @db.Text
@@ -30,4 +35,20 @@ model Evaluation {
   createdAt  DateTime     @default(now())
 
   @@index([symbol, createdAt])
+}
+
+model Order {
+  id              Int       @id @default(autoincrement())
+  exchangeOrderId String
+  symbol          String
+  side            OrderSide
+  quantity        Decimal
+  price           Decimal
+  cost            Decimal
+  fees            Decimal
+  createdAt       DateTime  @default(now())
+
+  @@index([symbol, side])
+  @@index([symbol])
+  @@index([side])
 }

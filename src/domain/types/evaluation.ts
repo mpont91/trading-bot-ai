@@ -1,13 +1,14 @@
 import { z } from 'zod'
 import { adviceSchema } from './advice'
 import { timeFrameSchema } from './time-frame'
+import { zMoney } from '../helpers/zod-primitives'
 
 export const evaluationSchema = z.object({
   id: z.number().int().optional(),
   ...adviceSchema.shape,
   symbol: z.string().min(1),
   timeFrame: timeFrameSchema,
-  price: z.number().positive(),
+  price: zMoney,
   model: z.string(),
   createdAt: z.date().optional(),
 })

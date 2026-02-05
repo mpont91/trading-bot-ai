@@ -11,12 +11,15 @@ import { Analyst } from './application/analyst'
 import { TechnicalIndicators } from './infrastructure/analyst/technical-indicators'
 import { AdviceRepository } from './application/repositories/advice-repository'
 import { PrismaEvaluationRepository } from './infrastructure/repositories/prisma-evaluation-repository'
+import { OrderRepository } from './application/repositories/order-repository'
+import { PrismaOrderRepository } from './infrastructure/repositories/prisma-order-repository'
 
 export class Container {
   private static exchangeService?: ExchangeService
   private static analystService?: AnalystService
   private static advisorService?: AdvisorService
   private static adviceRepository?: AdviceRepository
+  private static orderRepository?: OrderRepository
 
   static getSettings() {
     return settings
@@ -52,5 +55,12 @@ export class Container {
       this.adviceRepository = new PrismaEvaluationRepository()
     }
     return this.adviceRepository
+  }
+
+  static getOrderRepository(): OrderRepository {
+    if (!this.orderRepository) {
+      this.orderRepository = new PrismaOrderRepository()
+    }
+    return this.orderRepository
   }
 }
