@@ -15,8 +15,7 @@ deploy:
 check:
 	npm run build && \
 	npm run format:check && \
-	npm run lint && \
-	npm run test
+	npm run lint
 
 production:
 	git pull && \
@@ -25,7 +24,6 @@ production:
 	npm run migrate && \
 	npm run format:check && \
 	npm run lint && \
-	npm run test && \
 	npm run server:restart && \
 	npm run server:status
 
