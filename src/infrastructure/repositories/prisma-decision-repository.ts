@@ -10,7 +10,7 @@ export class PrismaDecisionRepository implements DecisionRepository {
         timeFrame: String(context.timeFrame),
         price: context.price,
         model: context.model,
-        decision: trade.decision,
+        action: trade.action,
         confidence: trade.confidence,
         reasoning: trade.reasoning,
       },

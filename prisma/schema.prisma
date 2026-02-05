@@ -12,22 +12,22 @@ datasource db {
   provider = "postgresql"
 }
 
-enum TradeAction {
+enum Action {
   BUY
   SELL
   HOLD
 }
 
 model Decision {
-  id         Int         @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   symbol     String
   timeFrame  String
   price      Float
-  decision   TradeAction
+  action     Action
   confidence Float
-  reasoning  String      @db.Text
+  reasoning  String   @db.Text
   model      String
-  createdAt  DateTime    @default(now())
+  createdAt  DateTime @default(now())
 
   @@index([symbol, createdAt])
 }

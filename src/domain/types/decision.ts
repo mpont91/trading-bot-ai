@@ -1,9 +1,9 @@
 import { z } from 'zod'
 import { timeFrameSchema } from './time-frame'
-import { TradeAction } from '@prisma/client'
+import { Action } from './action'
 
 export const decisionTradeSchema = z.object({
-  decision: z.enum(TradeAction),
+  action: z.enum(Action),
   confidence: z.number().min(0).max(1),
   reasoning: z.string(),
 })

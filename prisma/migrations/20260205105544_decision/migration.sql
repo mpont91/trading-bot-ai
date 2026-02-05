@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "TradeAction" AS ENUM ('BUY', 'SELL', 'HOLD');
+CREATE TYPE "Action" AS ENUM ('BUY', 'SELL', 'HOLD');
 
 -- CreateTable
 CREATE TABLE "Decision" (
@@ -7,7 +7,7 @@ CREATE TABLE "Decision" (
     "symbol" TEXT NOT NULL,
     "timeFrame" TEXT NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
-    "decision" "TradeAction" NOT NULL,
+    "action" "Action" NOT NULL,
     "confidence" DOUBLE PRECISION NOT NULL,
     "reasoning" TEXT NOT NULL,
     "model" TEXT NOT NULL,
