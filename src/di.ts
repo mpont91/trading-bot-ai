@@ -9,11 +9,18 @@ import { DecisionMakerService } from './domain/services/decision-maker-service'
 import { AnalystService } from './domain/services/analyst-service'
 import { Analyst } from './application/analyst'
 import { TechnicalIndicators } from './infrastructure/analyst/technical-indicators'
+import { DecisionRepository } from './application/repositories/decision-repository'
+import { PrismaDecisionRepository } from './infrastructure/repositories/prisma-decision-repository'
 
 export class Container {
   private static exchangeService?: ExchangeService
   private static analystService?: AnalystService
   private static decisionMakerService?: DecisionMakerService
+  private static decisionRepository?: DecisionRepository
+
+  static getSettings() {
+    return settings
+  }
 
   static getExchangeService(): ExchangeService {
     if (!this.exchangeService) {
@@ -38,5 +45,12 @@ export class Container {
       this.decisionMakerService = new DecisionMakerService(decisionMaker)
     }
     return this.decisionMakerService
+  }
+
+  static getDecisionRepository(): DecisionRepository {
+    if (!this.decisionRepository) {
+      this.decisionRepository = new PrismaDecisionRepository()
+    }
+    return this.decisionRepository
   }
 }

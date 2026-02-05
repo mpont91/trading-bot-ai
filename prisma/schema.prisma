@@ -5,23 +5,29 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-model Decisions {
-  id         Int      @id @default(autoincrement())
+enum TradeAction {
+  BUY
+  SELL
+  HOLD
+}
+
+model Decision {
+  id         Int         @id @default(autoincrement())
   symbol     String
   timeFrame  String
   price      Float
-  decision   String
+  decision   TradeAction
   confidence Float
-  reasoning  String   @db.Text
+  reasoning  String      @db.Text
   model      String
-  createdAt  DateTime @default(now())
+  createdAt  DateTime    @default(now())
 
   @@index([symbol, createdAt])
 }

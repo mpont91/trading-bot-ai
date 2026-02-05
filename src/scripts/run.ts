@@ -7,6 +7,11 @@ const scripts: Record<string, Fn> = {
   'decision-maker-decide': async (args: string[]) => {
     await (await import('./decision-maker/decision-maker-decide')).default(args)
   },
+  'decision-repository-save': async (args: string[]) => {
+    await (
+      await import('./decision-repository/decision-repository-save')
+    ).default(args)
+  },
   'exchange-get-candles': async (args: string[]) => {
     await (await import('./exchange/exchange-get-candles')).default(args)
   },

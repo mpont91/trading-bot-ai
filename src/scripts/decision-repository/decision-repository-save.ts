@@ -5,7 +5,9 @@ import { z } from 'zod'
 import { AnalystService } from '../../domain/services/analyst-service'
 import { TechnicalAnalysis } from '../../domain/types/technical-analysis'
 import { DecisionMakerService } from '../../domain/services/decision-maker-service'
-import { DecisionTrade } from '../../domain/types/decision'
+import { DecisionContext, DecisionTrade } from '../../domain/types/decision'
+import { DecisionRepository } from '../../application/repositories/decision-repository'
+import { Settings } from '../../domain/types/settings'
 
 const requestSchema = z.object({
   symbol: z.string(),
@@ -20,14 +22,27 @@ export default async function (args: string[]): Promise<void> {
 
   const exchangeService: ExchangeService = Container.getExchangeService()
   const candles: Candle[] = await exchangeService.getCandles(symbol)
+  const currentPrice = candles[candles.length - 1].closePrice
 
   const analystService: AnalystService = Container.getAnalystService()
   const technicalAnalysis: TechnicalAnalysis = analystService.calculate(candles)
 
   const decisionMakerService: DecisionMakerService =
     Container.getDecisionMakerService()
-  const response: DecisionTrade =
+  const decisionTrade: DecisionTrade =
     await decisionMakerService.decide(technicalAnalysis)
 
-  console.dir(response, { depth: null })
+  const decisionRepository: DecisionRepository =
+    Container.getDecisionRepository()
+
+  const settings: Settings = Container.getSettings()
+
+  const decisionContext: DecisionContext = {
+    symbol: symbol,
+    timeFrame: settings.strategy.timeFrame,
+    price: currentPrice,
+    model: settings.gemini.modelName,
+  }
+
+  await decisionRepository.save(decisionContext, decisionTrade)
 }

@@ -1,6 +1,6 @@
 import { TechnicalAnalysis } from '../domain/types/technical-analysis'
-import { TradeDecision } from '../domain/types/trade-decision'
+import { DecisionTrade } from '../domain/types/decision'
 
 export interface DecisionMaker {
-  decide(technicalAnalysis: TechnicalAnalysis): Promise<TradeDecision>
+  decide(technicalAnalysis: TechnicalAnalysis): Promise<DecisionTrade>
 }
