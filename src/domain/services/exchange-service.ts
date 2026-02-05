@@ -2,6 +2,7 @@ import { type Exchange } from '../../application/exchange'
 import { type Coin } from '../types/coin'
 import { Candle } from '../types/candle'
 import { StrategySettings } from '../types/settings'
+import { Order, OrderRequest } from '../types/order'
 
 export class ExchangeService {
   constructor(
@@ -19,5 +20,9 @@ export class ExchangeService {
 
   async getCandles(symbol: string): Promise<Candle[]> {
     return this.api.getCandles(symbol, this.settings.timeFrame)
+  }
+
+  async submitOrder(orderRequest: OrderRequest): Promise<Order> {
+    return this.api.submitOrder(orderRequest)
   }
 }

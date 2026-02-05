@@ -15,7 +15,7 @@ export const orderSchema = z.object({
   price: zMoney,
   cost: zMoney,
   fees: zFee,
-  createdAt: z.date(),
+  createdAt: z.date().optional(),
 })
 
 export const orderRequestSchema = z.object({

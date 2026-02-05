@@ -21,6 +21,14 @@ const scripts: Record<string, Fn> = {
   'exchange-get-price': async (args: string[]) => {
     await (await import('./exchange/exchange-get-price')).default(args)
   },
+  'exchange-submit-order': async (args: string[]) => {
+    await (await import('./exchange/exchange-submit-order')).default(args)
+  },
+  'order-repository-save-fake': async () => {
+    await (
+      await import('./order-repository/order-repository-save-fake')
+    ).default()
+  },
 }
 
 async function main(): Promise<void> {
