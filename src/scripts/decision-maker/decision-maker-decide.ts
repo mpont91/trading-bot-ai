@@ -1,0 +1,33 @@
+import { Container } from '../../di'
+import { ExchangeService } from '../../domain/services/exchange-service'
+import { Candle } from '../../domain/types/candle'
+import { z } from 'zod'
+import { AnalystService } from '../../domain/services/analyst-service'
+import { TechnicalAnalysis } from '../../domain/types/technical-analysis'
+import { DecisionMakerService } from '../../domain/services/decision-maker-service'
+import { TradeDecision } from '../../domain/types/trade-decision'
+
+const requestSchema = z.object({
+  symbol: z.string(),
+})
+
+export default async function (args: string[]): Promise<void> {
+  const [symbolRequest] = args
+
+  const { symbol } = requestSchema.parse({
+    symbol: symbolRequest,
+  })
+
+  const exchangeService: ExchangeService = Container.getExchangeService()
+  const candles: Candle[] = await exchangeService.getCandles(symbol)
+
+  const analystService: AnalystService = Container.getAnalystService()
+  const technicalAnalysis: TechnicalAnalysis = analystService.calculate(candles)
+
+  const decisionMakerService: DecisionMakerService =
+    Container.getDecisionMakerService()
+  const response: TradeDecision =
+    await decisionMakerService.decide(technicalAnalysis)
+
+  console.dir(response, { depth: null })
+}

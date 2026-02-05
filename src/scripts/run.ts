@@ -4,8 +4,8 @@ const scripts: Record<string, Fn> = {
   'analyst-calculate': async (args: string[]) => {
     await (await import('./analyst/analyst-calculate')).default(args)
   },
-  'decision-maker-analyze': async () => {
-    await (await import('./decision-maker/decision-maker-analyze')).default()
+  'decision-maker-decide': async (args: string[]) => {
+    await (await import('./decision-maker/decision-maker-decide')).default(args)
   },
   'exchange-get-candles': async (args: string[]) => {
     await (await import('./exchange/exchange-get-candles')).default(args)

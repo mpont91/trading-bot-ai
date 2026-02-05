@@ -1,67 +1,35 @@
-import {
-  GoogleGenerativeAI,
-  SchemaType,
-  type Schema,
-  GenerativeModel,
-} from '@google/generative-ai'
+import { GoogleGenerativeAI, GenerativeModel } from '@google/generative-ai'
 import { GeminiSettings } from '../../domain/types/settings'
 import { DecisionMaker } from '../../application/decision-maker'
-
-const tradingSchema: Schema = {
-  description: 'Trading decision based on market analysis',
-  type: SchemaType.OBJECT,
-  properties: {
-    decision: {
-      type: SchemaType.STRING,
-      format: 'enum',
-      enum: ['BUY', 'SELL', 'HOLD'],
-      description: 'The action to take',
-      nullable: false,
-    },
-    confidence: {
-      type: SchemaType.NUMBER,
-      description: 'Confidence level between 0 and 1',
-    },
-    reasoning: {
-      type: SchemaType.STRING,
-      description: 'Brief explanation of why this decision was made',
-    },
-  },
-  required: ['decision', 'confidence', 'reasoning'],
-}
+import { TechnicalAnalysis } from '../../domain/types/technical-analysis'
+import {
+  TradeDecision,
+  tradeDecisionSchema,
+} from '../../domain/types/trade-decision'
+import { geminiSchema } from './gemini-schema'
+import { geminiBuildPrompt } from './gemini-prompt'
 
 export class GeminiClient implements DecisionMaker {
-  private readonly googleGenerativeAI: GoogleGenerativeAI
   private readonly model: GenerativeModel
 
   constructor(settings: GeminiSettings) {
-    this.googleGenerativeAI = new GoogleGenerativeAI(settings.geminiApiKey)
-    this.model = this.googleGenerativeAI.getGenerativeModel({
-      model: 'gemini-2.5-flash-lite',
+    const googleGenerativeAI = new GoogleGenerativeAI(settings.geminiApiKey)
+
+    this.model = googleGenerativeAI.getGenerativeModel({
+      model: settings.modelName,
       generationConfig: {
         responseMimeType: 'application/json',
-        responseSchema: tradingSchema,
+        responseSchema: geminiSchema,
+        temperature: settings.temperature,
       },
     })
   }
 
-  async analyze(marketData: string): Promise<void> {
-    const prompt = `
-      You are an expert crypto day trader. Analyze the following technical indicators and market data.
-      Be aggressive but manage risk.
-      
-      Market Data:
-      ${marketData}
-    `
+  async decide(analysis: TechnicalAnalysis): Promise<TradeDecision> {
+    const prompt = geminiBuildPrompt(analysis)
 
-    try {
-      const result = await this.model.generateContent(prompt)
-      const response = result.response
-      console.log(response.text())
-      return JSON.parse(response.text())
-    } catch (error) {
-      console.error('Error asking Gemini:', error)
-      throw error
-    }
+    const result = await this.model.generateContent(prompt)
+    const responseText = result.response.text()
+    return tradeDecisionSchema.parse(JSON.parse(responseText))
   }
 }

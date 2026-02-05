@@ -10,6 +10,8 @@ export const binanceSettingsSchema = z.object({
 
 export const geminiSettingsSchema = z.object({
   geminiApiKey: z.string(),
+  modelName: z.string(),
+  temperature: z.number().min(0).max(2),
 })
 
 const rsiSettingsSchema = z.object({

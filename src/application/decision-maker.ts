@@ -1,3 +1,6 @@
+import { TechnicalAnalysis } from '../domain/types/technical-analysis'
+import { TradeDecision } from '../domain/types/trade-decision'
+
 export interface DecisionMaker {
-  analyze(marketData: string): Promise<void>
+  decide(technicalAnalysis: TechnicalAnalysis): Promise<TradeDecision>
 }

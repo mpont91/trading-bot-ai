@@ -10,6 +10,9 @@ export const settings: Settings = {
   },
   gemini: {
     geminiApiKey: process.env.GEMINI_API_KEY!,
+    modelName: 'gemini-2.5-flash-lite',
+    // modelName: 'gemini-2.5-pro',
+    temperature: 0.1,
   },
   strategy: {
     timeFrame: TimeFrame['1h'],
