@@ -3,41 +3,40 @@ import { BinanceClient } from './infrastructure/exchange/binance-client'
 import { ExchangeService } from './domain/services/exchange-service'
 import { settings } from './application/settings'
 import { BinanceSpot } from './infrastructure/exchange/binance-spot'
-import { type Ai } from './application/ai'
-import { GeminiClient } from './infrastructure/ai/gemini-client'
-import { AiService } from './domain/services/ai-service'
-import { TechnicalService } from './domain/services/technical-service'
-import { Technical } from './application/technical'
-import { TechnicalIndicators } from './infrastructure/technical/technical-indicators'
+import { type DecisionMaker } from './application/decision-maker'
+import { GeminiClient } from './infrastructure/decision-maker/gemini-client'
+import { DecisionMakerService } from './domain/services/decision-maker-service'
+import { AnalystService } from './domain/services/analyst-service'
+import { Analyst } from './application/analyst'
+import { TechnicalIndicators } from './infrastructure/analyst/technical-indicators'
 
-class Container {
-  private static exchangeService: ExchangeService
-  private static technicalService: TechnicalService
-  private static aiService: AiService
-
-  static initialize(): void {
-    const spot: BinanceSpot = new BinanceSpot(settings.binance)
-    const exchange: Exchange = new BinanceClient(spot)
-    const technical: Technical = new TechnicalIndicators(
-      settings.strategy.technical,
-    )
-    const ai: Ai = new GeminiClient(settings.gemini)
-
-    this.exchangeService = new ExchangeService(exchange, settings.strategy)
-    this.technicalService = new TechnicalService(technical)
-    this.aiService = new AiService(ai)
-  }
+export class Container {
+  private static exchangeService?: ExchangeService
+  private static analystService?: AnalystService
+  private static decisionMakerService?: DecisionMakerService
 
   static getExchangeService(): ExchangeService {
+    if (!this.exchangeService) {
+      const binanceSpot: BinanceSpot = new BinanceSpot(settings.binance)
+      const exchange: Exchange = new BinanceClient(binanceSpot)
+      this.exchangeService = new ExchangeService(exchange, settings.strategy)
+    }
     return this.exchangeService
   }
-  static getTechnicalService(): TechnicalService {
-    return this.technicalService
+  static getAnalystService(): AnalystService {
+    if (!this.analystService) {
+      const analyst: Analyst = new TechnicalIndicators(
+        settings.strategy.technical,
+      )
+      this.analystService = new AnalystService(analyst)
+    }
+    return this.analystService
   }
-  static getAiService(): AiService {
-    return this.aiService
+  static getDecisionMakerService(): DecisionMakerService {
+    if (!this.decisionMakerService) {
+      const decisionMaker: DecisionMaker = new GeminiClient(settings.gemini)
+      this.decisionMakerService = new DecisionMakerService(decisionMaker)
+    }
+    return this.decisionMakerService
   }
 }
-
-Container.initialize()
-export { Container }

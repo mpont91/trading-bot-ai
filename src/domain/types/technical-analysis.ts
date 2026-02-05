@@ -23,11 +23,11 @@ const emaSchema = z.object({
   goldenCross: z.boolean(),
 })
 
-export const technicalDataSchema = z.object({
+export const technicalAnalysisSchema = z.object({
   rsi: rsiSchema,
   macd: macdSchema,
   bollinger: bollingerSchema,
   ema: emaSchema,
 })
 
-export type TechnicalData = z.infer<typeof technicalDataSchema>
+export type TechnicalAnalysis = z.infer<typeof technicalAnalysisSchema>

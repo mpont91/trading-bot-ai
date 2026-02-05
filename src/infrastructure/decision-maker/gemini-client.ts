@@ -5,7 +5,7 @@ import {
   GenerativeModel,
 } from '@google/generative-ai'
 import { GeminiSettings } from '../../domain/types/settings'
-import { Ai } from '../../application/ai'
+import { DecisionMaker } from '../../application/decision-maker'
 
 const tradingSchema: Schema = {
   description: 'Trading decision based on market analysis',
@@ -30,7 +30,7 @@ const tradingSchema: Schema = {
   required: ['decision', 'confidence', 'reasoning'],
 }
 
-export class GeminiClient implements Ai {
+export class GeminiClient implements DecisionMaker {
   private readonly googleGenerativeAI: GoogleGenerativeAI
   private readonly model: GenerativeModel
 

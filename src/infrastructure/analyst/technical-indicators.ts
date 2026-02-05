@@ -1,13 +1,13 @@
 import { RSI, MACD, BollingerBands, EMA } from 'technicalindicators'
-import { Technical } from '../../application/technical'
+import { Analyst } from '../../application/analyst'
 import { type Candle } from '../../domain/types/candle'
-import { type TechnicalData } from '../../domain/types/technical-data'
+import { type TechnicalAnalysis } from '../../domain/types/technical-analysis'
 import { type TechnicalSettings } from '../../domain/types/settings'
 
-export class TechnicalIndicators implements Technical {
+export class TechnicalIndicators implements Analyst {
   constructor(private readonly settings: TechnicalSettings) {}
 
-  calculate(candles: Candle[]): TechnicalData {
+  calculate(candles: Candle[]): TechnicalAnalysis {
     const closePrices = candles.map((c) => c.closePrice)
     const currentPrice = closePrices[closePrices.length - 1]
 

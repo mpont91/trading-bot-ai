@@ -1,5 +1,5 @@
 import { Container } from '../../di'
-import { AiService } from '../../domain/services/ai-service'
+import { DecisionMakerService } from '../../domain/services/decision-maker-service'
 
 export default async function (): Promise<void> {
   const mockMarketData = JSON.stringify({
@@ -10,6 +10,7 @@ export default async function (): Promise<void> {
     lastCandles: ['green', 'green', 'red_doji'],
   })
 
-  const aiService: AiService = Container.getAiService()
-  await aiService.analize(mockMarketData)
+  const decisionMakerService: DecisionMakerService =
+    Container.getDecisionMakerService()
+  await decisionMakerService.analize(mockMarketData)
 }
