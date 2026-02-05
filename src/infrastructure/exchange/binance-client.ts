@@ -1,5 +1,6 @@
 import {
   Interval,
+  OrderType,
   RestMarketTypes,
   type RestTradeTypes,
 } from '@binance/connector-typescript'
@@ -10,6 +11,8 @@ import { TimeFrame } from '../../domain/types/time-frame'
 import { Candle } from '../../domain/types/candle'
 import { mapDomainToBinanceTimeFrame } from './mappers/time-frame-mapper'
 import { mapBinanceToDomainCandle } from './mappers/candle-mapper'
+import { OrderRequest } from '../../domain/types/order'
+import { mapDomainToBinanceSide } from './mappers/side-mapper'
 
 export class BinanceClient implements Exchange {
   constructor(private readonly api: BinanceSpot) {}
@@ -45,5 +48,20 @@ export class BinanceClient implements Exchange {
       await this.api.klineCandlestickData(symbol, binanceTimeFrame)
 
     return response.map(mapBinanceToDomainCandle)
+  }
+
+  async submitOrder(orderRequest: OrderRequest): Promise<string> {
+    const options: RestTradeTypes.newOrderOptions = {
+      quantity: orderRequest.quantity,
+    }
+
+    const response: RestTradeTypes.newOrderResponse = await this.api.newOrder(
+      orderRequest.symbol,
+      mapDomainToBinanceSide(orderRequest.side),
+      OrderType.MARKET,
+      options,
+    )
+
+    return response.orderId.toString()
   }
 }

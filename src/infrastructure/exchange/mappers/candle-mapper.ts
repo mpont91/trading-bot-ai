@@ -6,10 +6,10 @@ export function mapBinanceToDomainCandle(
 ): Candle {
   return {
     time: new Date(candle[0]),
-    openPrice: parseFloat(candle[1] as string),
-    highPrice: parseFloat(candle[2] as string),
-    lowPrice: parseFloat(candle[3] as string),
-    closePrice: parseFloat(candle[4] as string),
-    volume: parseFloat(candle[5] as string),
+    openPrice: parseFloat(String(candle[1])),
+    highPrice: parseFloat(String(candle[2])),
+    lowPrice: parseFloat(String(candle[3])),
+    closePrice: parseFloat(String(candle[4])),
+    volume: parseFloat(String(candle[5])),
   }
 }

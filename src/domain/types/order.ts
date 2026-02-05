@@ -4,11 +4,13 @@ import { zFee, zMoney, zQuantity } from '../helpers/zod-primitives'
 
 export { OrderSide }
 
+export const orderSideSchema = z.enum(OrderSide)
+
 export const orderSchema = z.object({
   id: z.number().int().optional(),
   exchangeOrderId: z.string(),
   symbol: z.string(),
-  side: OrderSide,
+  side: orderSideSchema,
   quantity: zQuantity,
   price: zMoney,
   cost: zMoney,
@@ -18,7 +20,7 @@ export const orderSchema = z.object({
 
 export const orderRequestSchema = z.object({
   symbol: z.string(),
-  side: OrderSide,
+  side: orderSideSchema,
   quantity: z.number().positive(),
 })
 

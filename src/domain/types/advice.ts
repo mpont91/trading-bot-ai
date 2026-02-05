@@ -3,8 +3,10 @@ import { AdviceAction } from '@prisma/client'
 
 export { AdviceAction }
 
+export const adviceActionSchema = z.enum(AdviceAction)
+
 export const adviceSchema = z.object({
-  action: z.enum(AdviceAction),
+  action: adviceActionSchema,
   confidence: z.number().min(0).max(1),
   reasoning: z.string(),
 })
