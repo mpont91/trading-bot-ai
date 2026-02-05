@@ -12,6 +12,8 @@ export const geminiSettingsSchema = z.object({
   geminiApiKey: z.string(),
   modelName: z.string(),
   temperature: z.number().min(0).max(2),
+  bottleneckMaxConcurrent: z.number().int(),
+  bottleneckMinTime: z.number().int(),
 })
 
 const rsiSettingsSchema = z.object({
@@ -42,6 +44,8 @@ export const analystSettingsSchema = z.object({
 })
 
 export const strategySettingsSchema = z.object({
+  symbols: z.array(z.string()),
+  intervalMs: z.number().int().positive(),
   timeFrame: timeFrameSchema,
   analyst: analystSettingsSchema,
 })

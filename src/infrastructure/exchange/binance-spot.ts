@@ -7,7 +7,7 @@ import {
   Spot,
 } from '@binance/connector-typescript'
 import Bottleneck from 'bottleneck'
-import { executeWithRateLimit } from './helpers/execute-with-rate-limit'
+import { executeWithRateLimit } from '../helpers/execute-with-rate-limit'
 import { type BinanceSettings } from '../../domain/types/settings'
 
 export class BinanceSpot {

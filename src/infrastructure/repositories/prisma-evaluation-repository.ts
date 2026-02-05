@@ -1,8 +1,8 @@
 import { prisma } from '../db/prisma-client'
-import { AdviceRepository } from '../../application/repositories/advice-repository'
+import { EvaluationRepository } from '../../application/repositories/evaluation-repository'
 import { Evaluation } from '../../domain/types/evaluation'
 
-export class PrismaEvaluationRepository implements AdviceRepository {
+export class PrismaEvaluationRepository implements EvaluationRepository {
   async save(evaluation: Evaluation): Promise<void> {
     await prisma.evaluation.create({
       data: {

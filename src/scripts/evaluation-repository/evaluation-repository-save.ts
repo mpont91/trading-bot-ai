@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { AnalystService } from '../../domain/services/analyst-service'
 import { Analysis } from '../../domain/types/analysis'
 import { AdvisorService } from '../../domain/services/advisor-service'
-import { AdviceRepository } from '../../application/repositories/advice-repository'
+import { EvaluationRepository } from '../../application/repositories/evaluation-repository'
 import { Settings } from '../../domain/types/settings'
 import { Advice } from '../../domain/types/advice'
 import { Evaluation } from '../../domain/types/evaluation'
@@ -31,7 +31,8 @@ export default async function (args: string[]): Promise<void> {
   const advisorService: AdvisorService = Container.getAdvisorService()
   const advice: Advice = await advisorService.advice(analysis)
 
-  const adviceRepository: AdviceRepository = Container.getAdviceRepository()
+  const evaluationRepository: EvaluationRepository =
+    Container.getEvaluationRepository()
 
   const settings: Settings = Container.getSettings()
 
@@ -43,5 +44,5 @@ export default async function (args: string[]): Promise<void> {
     model: settings.gemini.modelName,
   }
 
-  await adviceRepository.save(evaluation)
+  await evaluationRepository.save(evaluation)
 }

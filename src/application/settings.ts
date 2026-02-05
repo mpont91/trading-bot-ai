@@ -13,8 +13,12 @@ export const settings: Settings = {
     modelName: 'gemini-2.5-flash-lite',
     // modelName: 'gemini-2.5-pro',
     temperature: 0.1,
+    bottleneckMaxConcurrent: 1,
+    bottleneckMinTime: 2000,
   },
   strategy: {
+    intervalMs: 60 * 60 * 1000,
+    symbols: ['BTCUSDT', 'ETHUSDT', 'SOLUSDT'],
     timeFrame: TimeFrame['1h'],
     analyst: {
       rsi: {
