@@ -23,6 +23,7 @@ help:
 	@echo "  make logs     -> Shows live logs from the remote server."
 	@echo "  make restart  -> Forces a restart of the remote bot."
 	@echo "  make stop     -> Stops the remote bot."
+	@echo "  make destroy  -> Removes the remote bot from pm2 (Hard Reset)."
 	@echo "  make update   -> Updates local libraries (npm-check-updates)."
 	@echo "  make ssh      -> Connects to the server terminal."
 
@@ -61,6 +62,10 @@ stop:
 	@echo "🛑 [Stop] Stopping remote bot..."
 	$(REMOTE_EXEC) $(PM2_CMD) stop $(PM2_NAME)'
 
+destroy:
+	@echo "💥 [Destroy] Removing process and persistence..."
+	$(REMOTE_EXEC) $(PM2_CMD) delete $(PM2_NAME) || true && $(PM2_CMD) save'
+
 ssh:
 	$(SSH_CMD)
 
@@ -84,7 +89,5 @@ _server_update:
 	make _pm2_restart
 
 _pm2_restart:
-	$(PM2_CMD) reload $(PM2_NAME) --update-env || \
-	$(PM2_CMD) restart $(PM2_NAME) --update-env || \
-	$(PM2_CMD) start dist/index.js --name "$(PM2_NAME)" --node-args="--env-file=.env"
+	$(PM2_CMD) reload ecosystem.config.cjs || $(PM2_CMD) start ecosystem.config.cjs
 	$(PM2_CMD) save
