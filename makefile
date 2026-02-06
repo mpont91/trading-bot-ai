@@ -6,7 +6,9 @@ REMOTE_DIR = trading-bot-ai
 
 PM2_NAME = trading-bot
 
-LOAD_NVM = export NVM_DIR="$$HOME/.nvm" && [ -s "$$NVM_DIR/nvm.sh" ] && \. "$$NVM_DIR/nvm.sh"
+LOAD_NVM = export NVM_DIR="$$HOME/.nvm" && [ -s "$$NVM_DIR/nvm.sh" ] && \. "$$NVM_DIR/nvm.sh" && nvm install
+
+PM2_CMD = ./node_modules/.bin/pm2
 
 SSH_CMD = ssh -q -t $(SSH_SERVER)
 
@@ -45,11 +47,11 @@ deploy: check
 
 status:
 	@echo "📊 [Status] Querying server..."
-	$(REMOTE_EXEC) pm2 status $(PM2_NAME)'
+	$(REMOTE_EXEC) $(PM2_CMD) status $(PM2_NAME)'
 
 logs:
 	@echo "📜 [Logs] Connecting live feed (Ctrl+C to exit)..."
-	$(SSH_CMD) 'pm2 logs $(PM2_NAME)'
+	$(SSH_CMD) 'cd $(REMOTE_DIR) && $(PM2_CMD) logs $(PM2_NAME)'
 
 restart:
 	@echo "🔄 [Restart] Restarting remote process..."
@@ -57,7 +59,7 @@ restart:
 
 stop:
 	@echo "🛑 [Stop] Stopping remote bot..."
-	$(REMOTE_EXEC) pm2 stop $(PM2_NAME)'
+	$(REMOTE_EXEC) $(PM2_CMD) stop $(PM2_NAME)'
 
 ssh:
 	$(SSH_CMD)
@@ -72,11 +74,15 @@ _server_update:
 	git pull
 	@echo "📦 [Server] Installing deps..."
 	npm ci --silent
+	@echo "💎 [Server] Prisma Generate (Creando tipos)..."
+	npx prisma generate
 	@echo "🏗️ [Server] Building..."
 	npm run build
+	@echo "🗄️ [Server] Migrating Database..."
+	npx prisma migrate deploy
 	@echo "🚀 [Server] Restarting..."
 	make _pm2_restart
 
 _pm2_restart:
-	pm2 reload $(PM2_NAME) || pm2 restart $(PM2_NAME) || pm2 start dist/index.js --name "$(PM2_NAME)"
+	$(PM2_CMD) reload $(PM2_NAME) || $(PM2_CMD) restart $(PM2_NAME) || $(PM2_CMD) start dist/index.js --name "$(PM2_NAME)"
 	pm2 save
