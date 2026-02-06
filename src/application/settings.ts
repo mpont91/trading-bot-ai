@@ -1,6 +1,10 @@
 import { type Settings } from '../domain/types/settings'
 import { TimeFrame } from '../domain/types/time-frame'
 
+const ONE_SECOND_MS = 1000
+const ONE_MINUTE_MS = 60 * ONE_SECOND_MS
+const ONE_HOUR_MS = 60 * ONE_MINUTE_MS
+
 export const settings: Settings = {
   binance: {
     binanceApiKey: process.env.BINANCE_API_KEY!,
@@ -17,7 +21,7 @@ export const settings: Settings = {
     bottleneckMinTime: 2000,
   },
   strategy: {
-    intervalMs: 60 * 60 * 1000,
+    intervalMs: ONE_HOUR_MS,
     symbols: ['BTCUSDT', 'ETHUSDT', 'SOLUSDT'],
     timeFrame: TimeFrame['1h'],
     analyst: {
