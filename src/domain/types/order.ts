@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { OrderSide } from '@prisma/client'
-import { zFee, zMoney, zQuantity } from '../helpers/zod-primitives'
+import { zFee, zMoney, zQuantity } from '../helpers/zod-primitives-helper'
 
 export { OrderSide }
 
@@ -26,3 +26,14 @@ export const orderRequestSchema = z.object({
 
 export type Order = z.infer<typeof orderSchema>
 export type OrderRequest = z.infer<typeof orderRequestSchema>
+
+export function parseOrderSide(value: string): OrderSide {
+  switch (value) {
+    case 'BUY':
+      return OrderSide.BUY
+    case 'SELL':
+      return OrderSide.SELL
+    default:
+      throw new Error(`Invalid OrderSide: ${value}`)
+  }
+}

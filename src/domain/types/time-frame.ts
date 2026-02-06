@@ -18,3 +18,13 @@ export enum TimeFrame {
 }
 
 export const timeFrameSchema = z.enum(TimeFrame)
+
+export function parseTimeFrame(timeFrame: string): TimeFrame {
+  const value = (TimeFrame as never)[timeFrame]
+
+  if (value) {
+    return value as TimeFrame
+  }
+
+  throw new Error(`Invalid TimeFrame: ${timeFrame}`)
+}

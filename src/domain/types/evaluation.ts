@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { adviceSchema } from './advice'
 import { timeFrameSchema } from './time-frame'
-import { zMoney } from '../helpers/zod-primitives'
+import { zMoney } from '../helpers/zod-primitives-helper'
 
 export const evaluationSchema = z.object({
   id: z.number().int().optional(),
