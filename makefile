@@ -74,7 +74,7 @@ _server_update:
 	git pull
 	@echo "📦 [Server] Installing deps..."
 	npm ci --silent
-	@echo "💎 [Server] Prisma Generate (Creando tipos)..."
+	@echo "💎 [Server] Prisma Generate..."
 	npx prisma generate
 	@echo "🏗️ [Server] Building..."
 	npm run build
