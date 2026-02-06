@@ -51,7 +51,7 @@ status:
 
 logs:
 	@echo "📜 [Logs] Connecting live feed (Ctrl+C to exit)..."
-	$(SSH_CMD) 'cd $(REMOTE_DIR) && $(PM2_CMD) logs $(PM2_NAME)'
+	$(REMOTE_EXEC) $(PM2_CMD) logs $(PM2_NAME)'
 
 restart:
 	@echo "🔄 [Restart] Restarting remote process..."
