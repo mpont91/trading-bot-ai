@@ -8,6 +8,7 @@ import { Analysis } from '../domain/types/analysis'
 import { Advice } from '../domain/types/advice'
 import { Evaluation } from '../domain/types/evaluation'
 import { Settings } from '../domain/types/settings'
+import { Position } from '../domain/types/position'
 
 export class Manager {
   constructor(
@@ -19,10 +20,15 @@ export class Manager {
     private readonly settings: Settings,
   ) {}
   async execute(symbol: string): Promise<void> {
+    const position: Position | null = null
     const candles: Candle[] = await this.exchangeService.getCandles(symbol)
     const currentPrice = candles[candles.length - 1].closePrice
     const analysis: Analysis = this.analystService.calculate(candles)
-    const advice: Advice = await this.advisorService.advice(analysis)
+    const advice: Advice = await this.advisorService.advice(
+      symbol,
+      analysis,
+      position,
+    )
 
     const evaluation: Evaluation = {
       ...advice,

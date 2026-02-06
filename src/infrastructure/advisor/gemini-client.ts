@@ -7,6 +7,7 @@ import { geminiSchema } from './gemini-schema'
 import { geminiBuildPrompt } from './gemini-prompt'
 import Bottleneck from 'bottleneck'
 import { executeWithRateLimit } from '../helpers/execute-with-rate-limit'
+import { Position } from '../../domain/types/position'
 
 export class GeminiClient implements Advisor {
   private readonly model: GenerativeModel
@@ -30,9 +31,13 @@ export class GeminiClient implements Advisor {
     })
   }
 
-  async advice(analysis: Analysis): Promise<Advice> {
+  async advice(
+    symbol: string,
+    analysis: Analysis,
+    position: Position | null,
+  ): Promise<Advice> {
     const task = async (): Promise<Advice> => {
-      const prompt = geminiBuildPrompt(analysis)
+      const prompt = geminiBuildPrompt(symbol, analysis, position)
 
       const result = await this.model.generateContent(prompt)
       const responseText = result.response.text()
