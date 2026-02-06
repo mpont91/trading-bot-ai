@@ -84,5 +84,7 @@ _server_update:
 	make _pm2_restart
 
 _pm2_restart:
-	$(PM2_CMD) reload $(PM2_NAME) || $(PM2_CMD) restart $(PM2_NAME) || $(PM2_CMD) start dist/index.js --name "$(PM2_NAME)"
-	pm2 save
+	$(PM2_CMD) reload $(PM2_NAME) --update-env || \
+	$(PM2_CMD) restart $(PM2_NAME) --update-env || \
+	$(PM2_CMD) start dist/index.js --name "$(PM2_NAME)" --node-args="--env-file=.env"
+	$(PM2_CMD) save
