@@ -18,4 +18,15 @@ export class PrismaOrderRepository implements OrderRepository {
 
     return orderSchema.parse(record)
   }
+
+  async findLast(symbol: string): Promise<Order | null> {
+    const order = await prisma.order.findFirst({
+      where: { symbol },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    if (!order) return null
+
+    return orderSchema.parse(order)
+  }
 }
