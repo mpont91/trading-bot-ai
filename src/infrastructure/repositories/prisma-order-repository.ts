@@ -44,8 +44,12 @@ export class PrismaOrderRepository implements OrderRepository {
 
     if (startDate || endDate) {
       where.createdAt = {}
-      if (startDate) where.createdAt.gte = startDate
-      if (endDate) where.createdAt.lte = endDate
+      if (startDate) where.createdAt.gte = new Date(startDate)
+      if (endDate) {
+        const endOfDay = new Date(endDate)
+        endOfDay.setHours(23, 59, 59, 999)
+        where.createdAt.lte = endOfDay
+      }
     }
 
     const [data, total] = await Promise.all([
