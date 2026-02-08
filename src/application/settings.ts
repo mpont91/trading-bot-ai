@@ -22,7 +22,7 @@ export const settings: Settings = {
   },
   strategy: {
     intervalMs: ONE_HOUR_MS,
-    symbols: ['BTCUSDT', 'ETHUSDT', 'SOLUSDT'],
+    symbols: ['BTCUSDC', 'ETHUSDC', 'SOLUSDC'],
     timeFrame: TimeFrame['1h'],
     analyst: {
       rsi: {

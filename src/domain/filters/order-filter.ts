@@ -7,10 +7,7 @@ export const orderFilterSchema = z.object({
   ...paginationQuerySchema.shape,
   ...dateQuerySchema.shape,
   side: orderSideSchema.optional(),
-  symbol: z
-    .string()
-    .optional()
-    .transform((val) => val?.toUpperCase()),
+  symbol: z.string().optional(),
 })
 
 export type OrderFilter = z.infer<typeof orderFilterSchema>

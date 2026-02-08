@@ -22,12 +22,16 @@ export class PrismaEvaluationRepository implements EvaluationRepository {
   }
 
   async list(filters: EvaluationFilter): Promise<Paginated<Evaluation>> {
-    const { page, limit, startDate, endDate, symbol } = filters
+    const { page, limit, startDate, endDate, symbol, action } = filters
 
     const where: Prisma.EvaluationWhereInput = {}
 
     if (symbol) {
-      where.symbol = { contains: symbol }
+      where.symbol = { equals: symbol }
+    }
+
+    if (action) {
+      where.action = { equals: action }
     }
 
     if (startDate || endDate) {
