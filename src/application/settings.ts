@@ -43,4 +43,9 @@ export const settings: Settings = {
       },
     },
   },
+  trading: {
+    maxOpenSlots: 3,
+    minConfidenceThreshold: 0.7,
+    maxAllocationPercentage: 0.95,
+  },
 }

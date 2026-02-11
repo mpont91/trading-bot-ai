@@ -50,14 +50,22 @@ export const strategySettingsSchema = z.object({
   analyst: analystSettingsSchema,
 })
 
+export const tradingSettingsSchema = z.object({
+  maxOpenSlots: z.number().int().positive(),
+  minConfidenceThreshold: z.number().positive(),
+  maxAllocationPercentage: z.number().positive(),
+})
+
 export const settingsSchema = z.object({
   binance: binanceSettingsSchema,
   gemini: geminiSettingsSchema,
   strategy: strategySettingsSchema,
+  trading: tradingSettingsSchema,
 })
 
 export type BinanceSettings = z.infer<typeof binanceSettingsSchema>
 export type GeminiSettings = z.infer<typeof geminiSettingsSchema>
 export type AnalystSettings = z.infer<typeof analystSettingsSchema>
 export type StrategySettings = z.infer<typeof strategySettingsSchema>
+export type TradingSettings = z.infer<typeof tradingSettingsSchema>
 export type Settings = z.infer<typeof settingsSchema>
