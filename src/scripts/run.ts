@@ -19,6 +19,9 @@ const scripts: Record<string, Fn> = {
       await import('./evaluation-repository/evaluation-repository-save-fake')
     ).default()
   },
+  'exchange-get-balance': async (args: string[]) => {
+    await (await import('./exchange/exchange-get-balance')).default(args)
+  },
   'exchange-get-candles': async (args: string[]) => {
     await (await import('./exchange/exchange-get-candles')).default(args)
   },
@@ -35,6 +38,9 @@ const scripts: Record<string, Fn> = {
     await (
       await import('./order-repository/order-repository-save-fake')
     ).default()
+  },
+  'trading-get-equity': async () => {
+    await (await import('./trading/trading-get-equity')).default()
   },
 }
 

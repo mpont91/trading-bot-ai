@@ -14,11 +14,13 @@ import { PrismaEvaluationRepository } from './infrastructure/repositories/prisma
 import { OrderRepository } from './application/repositories/order-repository'
 import { PrismaOrderRepository } from './infrastructure/repositories/prisma-order-repository'
 import { Manager } from './application/manager'
+import { TradingService } from './domain/services/trading-service'
 
 export class Container {
   private static exchangeService?: ExchangeService
   private static analystService?: AnalystService
   private static advisorService?: AdvisorService
+  private static tradingService?: TradingService
   private static evaluationRepository?: EvaluationRepository
   private static orderRepository?: OrderRepository
   private static manager?: Manager
@@ -52,6 +54,14 @@ export class Container {
     return this.advisorService
   }
 
+  static getTradingService(): TradingService {
+    if (!this.tradingService) {
+      const exchangeService = this.getExchangeService()
+      this.tradingService = new TradingService(exchangeService, settings)
+    }
+    return this.tradingService
+  }
+
   static getEvaluationRepository(): EvaluationRepository {
     if (!this.evaluationRepository) {
       this.evaluationRepository = new PrismaEvaluationRepository()
@@ -72,6 +82,7 @@ export class Container {
         this.getAdvisorService(),
         this.getAnalystService(),
         this.getExchangeService(),
+        this.getTradingService(),
         this.getEvaluationRepository(),
         this.getOrderRepository(),
         this.getSettings(),

@@ -18,6 +18,12 @@ export class ExchangeService {
     return this.api.getCoins()
   }
 
+  async getBalance(coinName: string): Promise<number> {
+    const coins = await this.getCoins()
+    const coin = coins.find((c) => c.name === coinName)
+    return coin ? coin.quantity : 0
+  }
+
   async getPrice(symbol: string): Promise<number> {
     return this.api.getPrice(symbol)
   }
