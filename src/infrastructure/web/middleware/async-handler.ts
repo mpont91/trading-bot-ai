@@ -6,7 +6,12 @@ type AsyncFunction = (
   next: NextFunction,
 ) => Promise<unknown>
 
-export const asyncHandler =
-  (fn: AsyncFunction) => (req: Request, res: Response, next: NextFunction) => {
+export function asyncHandler(fn: AsyncFunction) {
+  return function asyncMiddlewareWrapper(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     Promise.resolve(fn(req, res, next)).catch(next)
   }
+}
