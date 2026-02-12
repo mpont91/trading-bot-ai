@@ -7,8 +7,8 @@ import { Paginated } from '../../domain/types/paginated'
 import { EvaluationMapper } from './mappers/evaluation-mapper'
 
 export class PrismaEvaluationRepository implements EvaluationRepository {
-  async save(evaluation: Evaluation): Promise<void> {
-    await prisma.evaluation.create({
+  async save(evaluation: Evaluation): Promise<Evaluation> {
+    const record = await prisma.evaluation.create({
       data: {
         symbol: evaluation.symbol,
         timeFrame: String(evaluation.timeFrame),
@@ -19,6 +19,8 @@ export class PrismaEvaluationRepository implements EvaluationRepository {
         reasoning: evaluation.reasoning,
       },
     })
+
+    return EvaluationMapper.toDomain(record)
   }
 
   async list(filters: EvaluationFilter): Promise<Paginated<Evaluation>> {

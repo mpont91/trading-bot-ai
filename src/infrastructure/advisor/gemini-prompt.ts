@@ -17,7 +17,7 @@ export function geminiBuildPrompt(
     - Entry Price: ${position.entryPrice}
     - Current Price: ${position.currentPrice}
     - Entry Time: ${position.entryTime.toISOString()}
-    - Current PnL: ${position.pnlPercent.toFixed(2)}%
+    - Current PnL: ${position.pnlPercent!.toFixed(2)}%
 
     [MISSION: MANAGE RISK & PROFIT]
     Your goal is to decide whether to:

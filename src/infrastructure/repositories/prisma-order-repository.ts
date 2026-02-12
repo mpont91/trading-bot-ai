@@ -1,6 +1,6 @@
 import { prisma } from '../db/prisma-client'
 import { OrderRepository } from '../../application/repositories/order-repository'
-import { Order, orderSchema } from '../../domain/types/order'
+import { Order } from '../../domain/types/order'
 import { OrderFilter } from '../../domain/filters/order-filter'
 import { Prisma } from '@prisma/client'
 import { Paginated } from '../../domain/types/paginated'
@@ -20,7 +20,7 @@ export class PrismaOrderRepository implements OrderRepository {
       },
     })
 
-    return orderSchema.parse(record)
+    return OrderMapper.toDomain(record)
   }
 
   async findLast(symbol: string): Promise<Order | null> {
@@ -31,7 +31,7 @@ export class PrismaOrderRepository implements OrderRepository {
 
     if (!order) return null
 
-    return orderSchema.parse(order)
+    return OrderMapper.toDomain(order)
   }
 
   async list(filters: OrderFilter): Promise<Paginated<Order>> {

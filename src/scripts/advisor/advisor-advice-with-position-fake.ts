@@ -6,6 +6,7 @@ import { Analysis } from '../../domain/types/analysis'
 import { AdvisorService } from '../../domain/services/advisor-service'
 import { Advice } from '../../domain/types/advice'
 import { Position } from '../../domain/types/position'
+import { PositionStatus } from '@prisma/client'
 
 export default async function (): Promise<void> {
   const symbol = 'BTCUSDC'
@@ -17,7 +18,7 @@ export default async function (): Promise<void> {
   const analysis: Analysis = analystService.calculate(candles)
 
   const advisorService: AdvisorService = Container.getAdvisorService()
-  const position: Position = createFakePosition(currentPrice)
+  const position: Position = createFakePosition(symbol, currentPrice)
   const response: Advice = await advisorService.advice(
     symbol,
     analysis,
@@ -27,13 +28,16 @@ export default async function (): Promise<void> {
   console.dir(response, { depth: null })
 }
 
-function createFakePosition(currentPrice: number) {
+function createFakePosition(symbol: string, currentPrice: number): Position {
   const hoursAgo = 10
   const entryTime = new Date(Date.now() - hoursAgo * 60 * 60 * 1000)
   const simulatedPnLPercent = 5.0
   const entryPrice = currentPrice / (1 + simulatedPnLPercent / 100)
 
   return {
+    buyOrderId: 1,
+    status: PositionStatus.OPEN,
+    symbol: symbol,
     quantity: 0.15,
     entryPrice: entryPrice,
     currentPrice: currentPrice,

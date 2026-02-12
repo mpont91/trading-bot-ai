@@ -15,6 +15,8 @@ import { OrderRepository } from './application/repositories/order-repository'
 import { PrismaOrderRepository } from './infrastructure/repositories/prisma-order-repository'
 import { Manager } from './application/manager'
 import { TradingService } from './domain/services/trading-service'
+import { PositionRepository } from './application/repositories/position-repository'
+import { PrismaPositionRepository } from './infrastructure/repositories/prisma-position-repository'
 
 export class Container {
   private static exchangeService?: ExchangeService
@@ -23,6 +25,7 @@ export class Container {
   private static tradingService?: TradingService
   private static evaluationRepository?: EvaluationRepository
   private static orderRepository?: OrderRepository
+  private static positionRepository?: PositionRepository
   private static manager?: Manager
 
   static getSettings() {
@@ -57,7 +60,14 @@ export class Container {
   static getTradingService(): TradingService {
     if (!this.tradingService) {
       const exchangeService = this.getExchangeService()
-      this.tradingService = new TradingService(exchangeService, settings)
+      const orderRepository = this.getOrderRepository()
+      const positionRepository = this.getPositionRepository()
+      this.tradingService = new TradingService(
+        exchangeService,
+        orderRepository,
+        positionRepository,
+        settings,
+      )
     }
     return this.tradingService
   }
@@ -76,6 +86,13 @@ export class Container {
     return this.orderRepository
   }
 
+  static getPositionRepository(): PositionRepository {
+    if (!this.positionRepository) {
+      this.positionRepository = new PrismaPositionRepository()
+    }
+    return this.positionRepository
+  }
+
   static getManager(): Manager {
     if (!this.manager) {
       this.manager = new Manager(
@@ -84,7 +101,7 @@ export class Container {
         this.getExchangeService(),
         this.getTradingService(),
         this.getEvaluationRepository(),
-        this.getOrderRepository(),
+        this.getPositionRepository(),
         this.getSettings(),
       )
     }
