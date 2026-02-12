@@ -20,8 +20,8 @@
   "dependencies": {
     "@binance/connector-typescript": "^0.3.16",
     "@google/generative-ai": "^0.24.1",
-    "@prisma/adapter-pg": "^7.3.0",
-    "@prisma/client": "^7.3.0",
+    "@prisma/adapter-pg": "^7.4.0",
+    "@prisma/client": "^7.4.0",
     "bottleneck": "^2.19.5",
     "cors": "^2.8.6",
     "dotenv": "^17.2.4",
@@ -41,11 +41,11 @@
     "eslint-plugin-prettier": "^5.5.5",
     "globals": "^17.3.0",
     "prettier": "^3.8.1",
-    "prisma": "^7.3.0",
+    "prisma": "^7.4.0",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.54.0"
+    "typescript-eslint": "^8.55.0"
   },
   "engines": {
     "node": ">=25.0.0"
