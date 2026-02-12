@@ -23,6 +23,11 @@ enum OrderSide {
   SELL
 }
 
+enum PositionStatus {
+  OPEN
+  CLOSED
+}
+
 model Evaluation {
   id         Int          @id @default(autoincrement())
   symbol     String
@@ -47,8 +52,29 @@ model Order {
   cost            Decimal
   fees            Decimal
   createdAt       DateTime  @default(now())
+  positionEntry   Position? @relation("PositionEntry")
+  positionExit    Position? @relation("PositionExit")
 
   @@index([symbol, side])
   @@index([symbol])
   @@index([side])
+}
+
+model Position {
+  id          Int            @id @default(autoincrement())
+  symbol      String
+  status      PositionStatus
+  entryPrice  Decimal
+  quantity    Decimal
+  entryTime   DateTime       @default(now())
+  buyOrderId  Int            @unique
+  buyOrder    Order          @relation("PositionEntry", fields: [buyOrderId], references: [id])
+  exitPrice   Decimal?
+  exitTime    DateTime?
+  sellOrderId Int?           @unique
+  sellOrder   Order?         @relation("PositionExit", fields: [sellOrderId], references: [id])
+  pnl         Decimal?
+  pnlPercent  Decimal?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 }
