@@ -14,18 +14,10 @@ SSH_CMD = ssh -q -t $(SSH_SERVER)
 
 REMOTE_EXEC = $(SSH_CMD) 'cd $(REMOTE_DIR) && $(LOAD_NVM) &&
 
-.PHONY: help check update ssh deploy status logs restart stop _server_update _pm2_restart
+.PHONY: help check update update-force update-ui ssh deploy status logs logs-error logs-history logs-info setup-logs restart stop destroy _server_update _pm2_restart _server_setup_logs
 
 help:
-	@echo "🤖 BOT MANAGER - Available commands:"
-	@echo "  make deploy   -> Checks local code, pushes changes, and restarts the remote server."
-	@echo "  make status   -> Shows the PM2 status on the remote server."
-	@echo "  make logs     -> Shows live logs from the remote server."
-	@echo "  make restart  -> Forces a restart of the remote bot."
-	@echo "  make stop     -> Stops the remote bot."
-	@echo "  make destroy  -> Removes the remote bot from pm2 (Hard Reset)."
-	@echo "  make update   -> Updates local libraries (npm-check-updates)."
-	@echo "  make ssh      -> Connects to the server terminal."
+	@npx tsx makefile-help.ts
 
 update:
 	@echo "🛡️  [Local] Checking for SAFE updates (Minor & Patch)..."
@@ -127,22 +119,10 @@ _pm2_restart:
 
 _server_setup_logs:
 	@echo "⚙️ [Server] Configuring Log Rotation (pm2-logrotate)..."
-	# 1. Instala el módulo (si ya existe, lo actualiza)
 	$(PM2_CMD) install pm2-logrotate
-
-	# 2. Configura: Máximo 10MB por archivo
 	$(PM2_CMD) set pm2-logrotate:max_size 10M
-
-	# 3. Configura: Guardar los últimos 30 archivos (aprox 1 mes si llenas 1 al día)
 	$(PM2_CMD) set pm2-logrotate:retain 30
-
-	# 4. Configura: Comprimir logs viejos (ahorra espacio)
 	$(PM2_CMD) set pm2-logrotate:compress true
-
-	# 5. Configura: Revisar cada 60 segundos si hay que rotar
 	$(PM2_CMD) set pm2-logrotate:workerInterval 60
-
-	# 6. Configura: Formato de fecha en el nombre del archivo
 	$(PM2_CMD) set pm2-logrotate:dateFormat YYYY-MM-DD_HH-mm-ss
-
 	@echo "✅ Log Rotation Configured & Active."
