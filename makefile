@@ -66,6 +66,22 @@ logs:
 	@echo "📜 [Logs] Connecting live feed (Ctrl+C to exit)..."
 	$(REMOTE_EXEC) $(PM2_CMD) logs $(PM2_NAME)'
 
+logs-error:
+	@echo "🚨 [Logs] Showing only ERRORS..."
+	$(REMOTE_EXEC) $(PM2_CMD) logs $(PM2_NAME) --err --lines 100'
+
+logs-history:
+	@echo "📜 [Logs] Fetching deep history (Last 1000 lines)..."
+	$(REMOTE_EXEC) $(PM2_CMD) logs $(PM2_NAME) --lines 1000'
+
+logs-info:
+	@echo "🔍 [Logs] Inspecting log files..."
+	$(REMOTE_EXEC) ls -lh ~/.pm2/logs/$(PM2_NAME)*'
+
+setup-logs:
+	@echo "🔧 [Setup] Configuring remote logs..."
+	$(REMOTE_EXEC) make _server_setup_logs'
+
 restart:
 	@echo "🔄 [Restart] Restarting remote process..."
 	$(REMOTE_EXEC) make _pm2_restart'
@@ -103,3 +119,30 @@ _server_update:
 _pm2_restart:
 	$(PM2_CMD) reload ecosystem.config.cjs || $(PM2_CMD) start ecosystem.config.cjs
 	$(PM2_CMD) save
+
+
+# ==========================================
+# ⚙️ SERVER PROVISIONING
+# ==========================================
+
+_server_setup_logs:
+	@echo "⚙️ [Server] Configuring Log Rotation (pm2-logrotate)..."
+	# 1. Instala el módulo (si ya existe, lo actualiza)
+	$(PM2_CMD) install pm2-logrotate
+
+	# 2. Configura: Máximo 10MB por archivo
+	$(PM2_CMD) set pm2-logrotate:max_size 10M
+
+	# 3. Configura: Guardar los últimos 30 archivos (aprox 1 mes si llenas 1 al día)
+	$(PM2_CMD) set pm2-logrotate:retain 30
+
+	# 4. Configura: Comprimir logs viejos (ahorra espacio)
+	$(PM2_CMD) set pm2-logrotate:compress true
+
+	# 5. Configura: Revisar cada 60 segundos si hay que rotar
+	$(PM2_CMD) set pm2-logrotate:workerInterval 60
+
+	# 6. Configura: Formato de fecha en el nombre del archivo
+	$(PM2_CMD) set pm2-logrotate:dateFormat YYYY-MM-DD_HH-mm-ss
+
+	@echo "✅ Log Rotation Configured & Active."
