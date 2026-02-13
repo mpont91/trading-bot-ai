@@ -19,6 +19,9 @@ const scripts: Record<string, Fn> = {
       await import('./evaluation-repository/evaluation-repository-save-fake')
     ).default()
   },
+  'exchange-check-symbols': async () => {
+    await (await import('./exchange/exchange-check-symbols')).default()
+  },
   'exchange-get-balance': async (args: string[]) => {
     await (await import('./exchange/exchange-get-balance')).default(args)
   },

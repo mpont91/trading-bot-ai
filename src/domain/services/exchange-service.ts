@@ -3,10 +3,6 @@ import { type Coin } from '../types/coin'
 import { Candle } from '../types/candle'
 import { StrategySettings } from '../types/settings'
 import { Order, OrderRequest } from '../types/order'
-import {
-  getStepSizeDecimals,
-  truncateToDecimals,
-} from '../helpers/step-size-helper'
 
 export class ExchangeService {
   constructor(
@@ -33,12 +29,10 @@ export class ExchangeService {
   }
 
   async submitOrder(orderRequest: OrderRequest): Promise<Order> {
-    const precision = getStepSizeDecimals(orderRequest.symbol)
-    const cleanQuantity = truncateToDecimals(orderRequest.quantity, precision)
+    return this.api.submitOrder(orderRequest)
+  }
 
-    return this.api.submitOrder({
-      ...orderRequest,
-      quantity: cleanQuantity,
-    })
+  async submitTestOrder(orderRequest: OrderRequest): Promise<void> {
+    return this.api.submitTestOrder(orderRequest)
   }
 }

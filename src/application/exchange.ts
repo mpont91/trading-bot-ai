@@ -8,4 +8,5 @@ export interface Exchange {
   getPrice(symbol: string): Promise<number>
   getCandles(symbol: string, timeFrame: TimeFrame): Promise<Candle[]>
   submitOrder(orderRequest: OrderRequest): Promise<Order>
+  submitTestOrder(orderRequest: OrderRequest): Promise<void>
 }

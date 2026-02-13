@@ -26,7 +26,6 @@ export const settings: Settings = {
       'AVAXUSDC',
       'POLUSDC',
       'UNIUSDC',
-      'PAXGUSDC',
       'AAVEUSDC',
       'DOGEUSDC',
       'BCHUSDC',

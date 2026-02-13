@@ -14,6 +14,10 @@ import { mapBinanceToDomainCandle } from './mappers/candle-mapper'
 import { Order, OrderRequest } from '../../domain/types/order'
 import { mapDomainToBinanceSide } from './mappers/side-mapper'
 import { mapBinanceToDomainOrder } from './mappers/order-mapper'
+import {
+  adjustQuantityToStepSize,
+  getStepSize,
+} from './helpers/step-size-helper'
 
 export class BinanceClient implements Exchange {
   constructor(private readonly api: BinanceSpot) {}
@@ -52,8 +56,15 @@ export class BinanceClient implements Exchange {
   }
 
   async submitOrder(orderRequest: OrderRequest): Promise<Order> {
+    const stepSize = getStepSize(orderRequest.symbol)
+
+    const cleanQuantity = adjustQuantityToStepSize(
+      orderRequest.quantity,
+      stepSize,
+    )
+
     const options: RestTradeTypes.newOrderOptions = {
-      quantity: orderRequest.quantity,
+      quantity: cleanQuantity,
     }
 
     const response: RestTradeTypes.newOrderResponse = await this.api.newOrder(
@@ -64,5 +75,25 @@ export class BinanceClient implements Exchange {
     )
 
     return mapBinanceToDomainOrder(response)
+  }
+
+  async submitTestOrder(orderRequest: OrderRequest): Promise<void> {
+    const stepSize = getStepSize(orderRequest.symbol)
+
+    const cleanQuantity = adjustQuantityToStepSize(
+      orderRequest.quantity,
+      stepSize,
+    )
+
+    const options: RestTradeTypes.newOrderOptions = {
+      quantity: cleanQuantity,
+    }
+
+    await this.api.newOrder(
+      orderRequest.symbol,
+      mapDomainToBinanceSide(orderRequest.side),
+      OrderType.MARKET,
+      options,
+    )
   }
 }

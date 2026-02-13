@@ -82,6 +82,19 @@ export class BinanceSpot {
     return executeWithRateLimit(this.limiter, task)
   }
 
+  async testNewOrder(
+    symbol: string,
+    side: Side,
+    type: OrderType,
+    options?: RestTradeTypes.newOrderOptions,
+  ): Promise<void> {
+    const task = async (): Promise<void> => {
+      await this.client.testNewOrder(symbol, side, type, options)
+    }
+
+    return executeWithRateLimit(this.limiter, task)
+  }
+
   async getOrder(
     symbol: string,
     orderId: string,
