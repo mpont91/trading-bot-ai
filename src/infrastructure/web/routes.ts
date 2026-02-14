@@ -3,11 +3,15 @@ import { EvaluationController } from './controllers/evaluation-controller'
 import { Container } from '../../di'
 import { OrderController } from './controllers/order-controller'
 import { asyncHandler } from './middleware/async-handler'
+import { PositionController } from './controllers/position-controller'
 
 const evaluationController = new EvaluationController(
   Container.getEvaluationRepository(),
 )
 const orderController = new OrderController(Container.getOrderRepository())
+const positionController = new PositionController(
+  Container.getPositionRepository(),
+)
 
 const router: Router = Router()
 
@@ -30,6 +34,13 @@ router.get(
   '/orders',
   asyncHandler((request: Request, response: Response) =>
     orderController.getOrders(request, response),
+  ),
+)
+
+router.get(
+  '/positions',
+  asyncHandler((request: Request, response: Response) =>
+    positionController.getPositions(request, response),
   ),
 )
 
