@@ -5,6 +5,11 @@ import { OrderFilter } from '../../domain/filters/order-filter'
 import { Prisma } from '@prisma/client'
 import { Paginated } from '../../domain/types/paginated'
 import { OrderMapper } from './mappers/order-mapper'
+import {
+  buildPaginatedResponse,
+  getDateRangeFilter,
+  getPaginationParams,
+} from './helpers/prisma-helper'
 
 export class PrismaOrderRepository implements OrderRepository {
   async save(order: Order): Promise<Order> {
@@ -37,37 +42,27 @@ export class PrismaOrderRepository implements OrderRepository {
   async list(filters: OrderFilter): Promise<Paginated<Order>> {
     const { page, limit, startDate, endDate, symbol, side } = filters
 
-    const where: Prisma.OrderWhereInput = {}
-
-    if (symbol) where.symbol = { contains: symbol }
-    if (side) where.side = side
-
-    if (startDate || endDate) {
-      where.createdAt = {}
-      if (startDate) where.createdAt.gte = new Date(startDate)
-      if (endDate) {
-        const endOfDay = new Date(endDate)
-        endOfDay.setHours(23, 59, 59, 999)
-        where.createdAt.lte = endOfDay
-      }
+    const where: Prisma.OrderWhereInput = {
+      symbol: symbol ? { equals: symbol } : undefined,
+      side: side ? { equals: side } : undefined,
+      createdAt: getDateRangeFilter(startDate, endDate),
     }
 
     const [data, total] = await Promise.all([
       prisma.order.findMany({
         where,
-        take: limit,
-        skip: (page - 1) * limit,
         orderBy: { createdAt: 'desc' },
+        ...getPaginationParams(page, limit),
       }),
       prisma.order.count({ where }),
     ])
 
-    return {
+    return buildPaginatedResponse(
+      data,
       total,
       page,
       limit,
-      lastPage: Math.ceil(total / limit),
-      data: data.map(OrderMapper.toDomain),
-    }
+      OrderMapper.toDomain,
+    )
   }
 }

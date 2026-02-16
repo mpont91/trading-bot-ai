@@ -5,36 +5,27 @@ import { PositionFilter } from '../../domain/filters/position-filter'
 import { Prisma } from '@prisma/client'
 import { Paginated } from '../../domain/types/paginated'
 import { PositionMapper } from './mappers/position-mapper'
+import {
+  buildPaginatedResponse,
+  getDateRangeFilter,
+  getPaginationParams,
+} from './helpers/prisma-helper'
 
 export class PrismaPositionRepository implements PositionRepository {
   async save(position: Position): Promise<Position> {
     if (position.id) {
       const record = await prisma.position.update({
         where: { id: position.id },
-        data: {
-          status: position.status,
-          exitPrice: position.exitPrice,
-          exitTime: position.exitTime,
-          sellOrderId: position.sellOrderId,
-          pnl: position.pnl,
-          pnlPercent: position.pnlPercent,
-        },
+        data: PositionMapper.toCreateInput(position),
       })
       return PositionMapper.toDomain(record)
+    } else {
+      const record = await prisma.position.create({
+        data: PositionMapper.toCreateInput(position),
+      })
+
+      return PositionMapper.toDomain(record)
     }
-
-    const record = await prisma.position.create({
-      data: {
-        symbol: position.symbol,
-        status: position.status,
-        entryPrice: position.entryPrice,
-        quantity: position.quantity,
-        entryTime: position.entryTime,
-        buyOrderId: position.buyOrderId,
-      },
-    })
-
-    return PositionMapper.toDomain(record)
   }
 
   async findOpen(symbol: string): Promise<Position | null> {
@@ -54,37 +45,27 @@ export class PrismaPositionRepository implements PositionRepository {
   async list(filters: PositionFilter): Promise<Paginated<Position>> {
     const { page, limit, startDate, endDate, symbol, status } = filters
 
-    const where: Prisma.PositionWhereInput = {}
-
-    if (symbol) where.symbol = { contains: symbol }
-    if (status) where.status = status
-
-    if (startDate || endDate) {
-      where.entryTime = {}
-      if (startDate) where.entryTime.gte = new Date(startDate)
-      if (endDate) {
-        const endOfDay = new Date(endDate)
-        endOfDay.setHours(23, 59, 59, 999)
-        where.entryTime.lte = endOfDay
-      }
+    const where: Prisma.PositionWhereInput = {
+      symbol: symbol ? { equals: symbol } : undefined,
+      status: status ? { equals: status } : undefined,
+      createdAt: getDateRangeFilter(startDate, endDate),
     }
 
     const [data, total] = await Promise.all([
       prisma.position.findMany({
         where,
-        take: limit,
-        skip: (page - 1) * limit,
-        orderBy: { entryTime: 'desc' },
+        orderBy: { createdAt: 'desc' },
+        ...getPaginationParams(page, limit),
       }),
       prisma.position.count({ where }),
     ])
 
-    return {
+    return buildPaginatedResponse(
+      data,
       total,
       page,
       limit,
-      lastPage: Math.ceil(total / limit),
-      data: data.map(PositionMapper.toDomain),
-    }
+      PositionMapper.toDomain,
+    )
   }
 }
