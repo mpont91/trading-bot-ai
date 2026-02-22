@@ -89,7 +89,7 @@ export class BinanceClient implements Exchange {
       quantity: cleanQuantity,
     }
 
-    await this.api.newOrder(
+    await this.api.testNewOrder(
       orderRequest.symbol,
       mapDomainToBinanceSide(orderRequest.side),
       OrderType.MARKET,
