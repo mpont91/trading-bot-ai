@@ -4,6 +4,7 @@ import { Container } from '../../di'
 import { OrderController } from './controllers/order-controller'
 import { asyncHandler } from './middleware/async-handler'
 import { PositionController } from './controllers/position-controller'
+import { PerformanceController } from './controllers/performance-controller'
 
 const evaluationController = new EvaluationController(
   Container.getEvaluationRepository(),
@@ -11,6 +12,9 @@ const evaluationController = new EvaluationController(
 const orderController = new OrderController(Container.getOrderRepository())
 const positionController = new PositionController(
   Container.getPositionRepository(),
+)
+const performanceController = new PerformanceController(
+  Container.getPerformanceRepository(),
 )
 
 const router: Router = Router()
@@ -41,6 +45,13 @@ router.get(
   '/positions',
   asyncHandler((request: Request, response: Response) =>
     positionController.getPositions(request, response),
+  ),
+)
+
+router.get(
+  '/performance',
+  asyncHandler((request: Request, response: Response) =>
+    performanceController.getPerformance(request, response),
   ),
 )
 
