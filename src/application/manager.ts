@@ -56,20 +56,39 @@ export class Manager {
       model: this.settings.gemini.modelName,
     })
 
-    if (
-      advice.action !== 'HOLD' &&
-      advice.confidence < this.settings.trading.minConfidenceThreshold
-    ) {
+    if (advice.action === 'HOLD') {
+      return
+    }
+
+    if (advice.confidence < this.settings.trading.minConfidenceThreshold) {
       console.log(
         `[Manager] ⚠️ ${advice.action} signal ignored for ${symbol}. Low confidence: ${(advice.confidence * 100).toFixed(1)}%`,
       )
       return
     }
 
-    if (!position && advice.action === 'BUY') {
+    if (advice.action === 'BUY') {
+      if (position) {
+        console.log(
+          `[Manager] ℹ️ BUY signal ignored for ${symbol}: A position is already OPEN.`,
+        )
+        return
+      }
+
       await this.tradingService.openPosition(symbol)
-    } else if (position && advice.action === 'SELL') {
+      return
+    }
+
+    if (advice.action === 'SELL') {
+      if (!position) {
+        console.log(
+          `[Manager] ℹ️ SELL ignored for ${symbol}: No OPEN position to close.`,
+        )
+        return
+      }
+
       await this.tradingService.closePosition(symbol)
+      return
     }
   }
 }
