@@ -13,19 +13,20 @@ import {
 
 export class PrismaPositionRepository implements PositionRepository {
   async save(position: Position): Promise<Position> {
+    let record
     if (position.id) {
-      const record = await prisma.position.update({
+      record = await prisma.position.update({
         where: { id: position.id },
-        data: PositionMapper.toCreateInput(position),
+        data: PositionMapper.toUpdateInput(position),
       })
       return PositionMapper.toDomain(record)
     } else {
-      const record = await prisma.position.create({
+      record = await prisma.position.create({
         data: PositionMapper.toCreateInput(position),
       })
-
-      return PositionMapper.toDomain(record)
     }
+
+    return PositionMapper.toDomain(record)
   }
 
   async findOpen(symbol: string): Promise<Position | null> {
