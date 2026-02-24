@@ -68,4 +68,12 @@ export class PrismaPositionRepository implements PositionRepository {
       PositionMapper.toDomain,
     )
   }
+
+  async countOpen(): Promise<number> {
+    return prisma.position.count({
+      where: {
+        status: PositionStatus.OPEN,
+      },
+    })
+  }
 }

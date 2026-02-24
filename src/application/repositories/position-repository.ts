@@ -6,4 +6,5 @@ export interface PositionRepository {
   save(position: Position): Promise<Position>
   findOpen(symbol: string): Promise<Position | null>
   list(filters: PositionFilter): Promise<Paginated<Position>>
+  countOpen(): Promise<number>
 }

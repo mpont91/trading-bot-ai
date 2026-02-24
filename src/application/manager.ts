@@ -75,6 +75,15 @@ export class Manager {
         return
       }
 
+      const openPositions = await this.positionRepository.countOpen()
+
+      if (openPositions >= this.settings.trading.maxOpenSlots) {
+        console.log(
+          `[Manager] 🚫 BUY ignored for ${symbol}: Maximum open slots (${this.settings.trading.maxOpenSlots}) reached.`,
+        )
+        return
+      }
+
       await this.tradingService.openPosition(symbol)
       return
     }
