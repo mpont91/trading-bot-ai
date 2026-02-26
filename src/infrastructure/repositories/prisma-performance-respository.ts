@@ -14,6 +14,18 @@ export class PrismaPerformanceRepository implements PerformanceRepository {
     const totalTrades = positionStats._count.id
     const totalPnl = positionStats._sum.pnl?.toNumber() || 0
 
+    const costResult = await prisma.$queryRaw<
+      { totalInvested: number | null }[]
+    >`
+      SELECT SUM("entryPrice" * "quantity") as "totalInvested"
+      FROM "Position"
+      WHERE "status" = 'CLOSED'
+    `
+    const totalInvested = Number(costResult[0]?.totalInvested) || 0
+
+    const totalPnlPercent =
+      totalInvested > 0 ? (totalPnl / totalInvested) * 100 : 0
+
     const winningTrades = await prisma.position.count({
       where: {
         status: PositionStatus.CLOSED,
@@ -36,6 +48,7 @@ export class PrismaPerformanceRepository implements PerformanceRepository {
       losingTrades,
       winRate,
       totalPnl,
+      totalPnlPercent,
       totalFees,
     }
   }

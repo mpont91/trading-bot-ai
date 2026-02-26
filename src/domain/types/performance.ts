@@ -6,6 +6,7 @@ export const performanceSchema = z.object({
   losingTrades: z.number(),
   winRate: z.number(),
   totalPnl: z.number(),
+  totalPnlPercent: z.number(),
   totalFees: z.number(),
 })
 
