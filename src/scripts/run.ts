@@ -31,6 +31,9 @@ const scripts: Record<string, Fn> = {
   'exchange-get-coins': async () => {
     await (await import('./exchange/exchange-get-coins')).default()
   },
+  'exchange-get-order': async (args: string[]) => {
+    await (await import('./exchange/exchange-get-order')).default(args)
+  },
   'exchange-get-price': async (args: string[]) => {
     await (await import('./exchange/exchange-get-price')).default(args)
   },

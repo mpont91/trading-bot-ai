@@ -1,5 +1,6 @@
 import {
   Interval,
+  NewOrderRespType,
   OrderType,
   RestMarketTypes,
   type RestTradeTypes,
@@ -13,7 +14,10 @@ import { mapDomainToBinanceTimeFrame } from './mappers/time-frame-mapper'
 import { mapBinanceToDomainCandle } from './mappers/candle-mapper'
 import { Order, OrderRequest } from '../../domain/types/order'
 import { mapDomainToBinanceSide } from './mappers/side-mapper'
-import { mapBinanceToDomainOrder } from './mappers/order-mapper'
+import {
+  mapBinanceToDomainOrder,
+  mapBinanceTradesToDomainOrder,
+} from './mappers/order-mapper'
 import {
   adjustQuantityToStepSize,
   getStepSize,
@@ -65,6 +69,7 @@ export class BinanceClient implements Exchange {
 
     const options: RestTradeTypes.newOrderOptions = {
       quantity: cleanQuantity,
+      newOrderRespType: NewOrderRespType.FULL,
     }
 
     const response: RestTradeTypes.newOrderResponse = await this.api.newOrder(
@@ -74,7 +79,16 @@ export class BinanceClient implements Exchange {
       options,
     )
 
-    return mapBinanceToDomainOrder(response)
+    let bnbPrice
+    const hasBnbFee = response.fills?.some(
+      (fill) => fill.commissionAsset === 'BNB',
+    )
+
+    if (hasBnbFee) {
+      bnbPrice = await this.getPrice('BNBUSDC')
+    }
+
+    return mapBinanceToDomainOrder(response, bnbPrice)
   }
 
   async submitTestOrder(orderRequest: OrderRequest): Promise<void> {
@@ -94,6 +108,33 @@ export class BinanceClient implements Exchange {
       mapDomainToBinanceSide(orderRequest.side),
       OrderType.MARKET,
       options,
+    )
+  }
+
+  async getOrder(symbol: string, orderId: string): Promise<Order> {
+    const tradesResponse: RestTradeTypes.accountTradeListResponse[] =
+      await this.api.accountTradeList(symbol, orderId)
+
+    if (!tradesResponse || tradesResponse.length === 0) {
+      throw new Error(
+        `[Exchange] No trades found for order ${orderId} on ${symbol}`,
+      )
+    }
+
+    let bnbPrice
+    const hasBnbFee = tradesResponse.some(
+      (trade) => trade.commissionAsset === 'BNB',
+    )
+
+    if (hasBnbFee) {
+      bnbPrice = await this.getPrice('BNBUSDC')
+    }
+
+    return mapBinanceTradesToDomainOrder(
+      tradesResponse,
+      symbol,
+      orderId,
+      bnbPrice,
     )
   }
 }

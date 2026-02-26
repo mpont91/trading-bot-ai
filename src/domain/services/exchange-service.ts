@@ -35,4 +35,8 @@ export class ExchangeService {
   async submitTestOrder(orderRequest: OrderRequest): Promise<void> {
     return this.api.submitTestOrder(orderRequest)
   }
+
+  async getOrder(symbol: string, orderId: string): Promise<Order> {
+    return this.api.getOrder(symbol, orderId)
+  }
 }
