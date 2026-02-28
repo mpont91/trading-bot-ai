@@ -45,6 +45,9 @@ const scripts: Record<string, Fn> = {
       await import('./order-repository/order-repository-save-fake')
     ).default()
   },
+  'portfolio-record': async () => {
+    await (await import('./portfolio/portfolio-record')).default()
+  },
   'position-repository-save-fake': async () => {
     await (
       await import('./position-repository/position-repository-save-fake')

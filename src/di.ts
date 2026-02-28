@@ -19,16 +19,21 @@ import { PositionRepository } from './application/repositories/position-reposito
 import { PrismaPositionRepository } from './infrastructure/repositories/prisma-position-repository'
 import { PerformanceRepository } from './application/repositories/performance-repository'
 import { PrismaPerformanceRepository } from './infrastructure/repositories/prisma-performance-respository'
+import { PortfolioService } from './domain/services/portfolio-service'
+import { PortfolioRepository } from './application/repositories/portfolio-repository'
+import { PrismaPortfolioRepository } from './infrastructure/repositories/prisma-portfolio-repository'
 
 export class Container {
   private static exchangeService?: ExchangeService
   private static analystService?: AnalystService
   private static advisorService?: AdvisorService
   private static tradingService?: TradingService
+  private static portfolioService?: PortfolioService
   private static evaluationRepository?: EvaluationRepository
   private static orderRepository?: OrderRepository
   private static positionRepository?: PositionRepository
   private static performanceRepository?: PerformanceRepository
+  private static portfolioRepository?: PortfolioRepository
   private static manager?: Manager
 
   static getSettings() {
@@ -75,6 +80,20 @@ export class Container {
     return this.tradingService
   }
 
+  static getPortfolioService(): PortfolioService {
+    if (!this.portfolioService) {
+      const exchangeService = this.getExchangeService()
+      const tradingService = this.getTradingService()
+      const portfolioRepository = this.getPortfolioRepository()
+      this.portfolioService = new PortfolioService(
+        exchangeService,
+        tradingService,
+        portfolioRepository,
+      )
+    }
+    return this.portfolioService
+  }
+
   static getEvaluationRepository(): EvaluationRepository {
     if (!this.evaluationRepository) {
       this.evaluationRepository = new PrismaEvaluationRepository()
@@ -101,6 +120,13 @@ export class Container {
       this.performanceRepository = new PrismaPerformanceRepository()
     }
     return this.performanceRepository
+  }
+
+  static getPortfolioRepository(): PortfolioRepository {
+    if (!this.portfolioRepository) {
+      this.portfolioRepository = new PrismaPortfolioRepository()
+    }
+    return this.portfolioRepository
   }
 
   static getManager(): Manager {

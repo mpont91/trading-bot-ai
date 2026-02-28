@@ -5,6 +5,7 @@ import { OrderController } from './controllers/order-controller'
 import { asyncHandler } from './middleware/async-handler'
 import { PositionController } from './controllers/position-controller'
 import { PerformanceController } from './controllers/performance-controller'
+import { PortfolioController } from './controllers/portfolio-controller'
 
 const evaluationController = new EvaluationController(
   Container.getEvaluationRepository(),
@@ -15,6 +16,9 @@ const positionController = new PositionController(
 )
 const performanceController = new PerformanceController(
   Container.getPerformanceRepository(),
+)
+const portfolioController = new PortfolioController(
+  Container.getPortfolioService(),
 )
 
 const router: Router = Router()
@@ -52,6 +56,13 @@ router.get(
   '/performance',
   asyncHandler((request: Request, response: Response) =>
     performanceController.getPerformance(request, response),
+  ),
+)
+
+router.get(
+  '/portfolio',
+  asyncHandler((request: Request, response: Response) =>
+    portfolioController.getLatest(request, response),
   ),
 )
 
