@@ -2,8 +2,7 @@ import { z } from 'zod'
 import { zMoney, zQuantity } from '../helpers/zod-primitives-helper'
 
 export const portfolioSchema = z.object({
-  id: z.number().int().optional(),
-  timestamp: z.date().optional(),
+  timestamp: z.date(),
   equity: zMoney,
   bnb: zQuantity,
 })
