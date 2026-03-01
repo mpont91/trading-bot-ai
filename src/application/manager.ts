@@ -10,8 +10,11 @@ import { Position } from '../domain/types/position'
 import { TradingService } from '../domain/services/trading-service'
 import { PositionRepository } from './repositories/position-repository'
 import { MaintenanceService } from '../domain/services/maintenance-service'
+import { Logger } from '../domain/helpers/logger-helper'
 
 export class Manager {
+  private readonly logger = new Logger('👔  Manager')
+
   constructor(
     private readonly advisorService: AdvisorService,
     private readonly analystService: AnalystService,
@@ -27,10 +30,10 @@ export class Manager {
     await this.maintenanceService.bnbRefill()
     for (const symbol of this.settings.strategy.symbols) {
       try {
-        console.log(`Trading bot analyzing ${symbol}...`)
+        this.logger.info(`Analyzing ${symbol}...`)
         await this.execute(symbol)
       } catch (error) {
-        console.error(`Error running trading bot analyzing ${symbol}:`, error)
+        this.logger.error(`Error analyzing ${symbol}:`, error)
       }
     }
   }
@@ -76,16 +79,16 @@ export class Manager {
     }
 
     if (advice.confidence < this.settings.trading.minConfidenceThreshold) {
-      console.log(
-        `[Manager] ⚠️ ${advice.action} signal ignored for ${symbol}. Low confidence: ${(advice.confidence * 100).toFixed(1)}%`,
+      this.logger.warn(
+        `${advice.action} signal ignored for ${symbol}. Low confidence: ${(advice.confidence * 100).toFixed(1)}%`,
       )
       return
     }
 
     if (advice.action === 'BUY') {
       if (position) {
-        console.log(
-          `[Manager] ℹ️ BUY signal ignored for ${symbol}: A position is already OPEN.`,
+        this.logger.warn(
+          `Buy signal ignored for ${symbol}: A position is already opened.`,
         )
         return
       }
@@ -93,8 +96,8 @@ export class Manager {
       const openPositions = await this.positionRepository.countOpen()
 
       if (openPositions >= this.settings.trading.maxOpenSlots) {
-        console.log(
-          `[Manager] 🚫 BUY ignored for ${symbol}: Maximum open slots (${this.settings.trading.maxOpenSlots}) reached.`,
+        this.logger.warn(
+          `Buy signal ignored for ${symbol}: Maximum open slots (${this.settings.trading.maxOpenSlots}) reached.`,
         )
         return
       }
@@ -105,8 +108,8 @@ export class Manager {
 
     if (advice.action === 'SELL') {
       if (!position) {
-        console.log(
-          `[Manager] ℹ️ SELL ignored for ${symbol}: No OPEN position to close.`,
+        this.logger.warn(
+          `Sell signal ignored for ${symbol}: No opened position to close.`,
         )
         return
       }
