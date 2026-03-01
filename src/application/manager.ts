@@ -9,6 +9,7 @@ import { Settings } from '../domain/types/settings'
 import { Position } from '../domain/types/position'
 import { TradingService } from '../domain/services/trading-service'
 import { PositionRepository } from './repositories/position-repository'
+import { MaintenanceService } from '../domain/services/maintenance-service'
 
 export class Manager {
   constructor(
@@ -16,10 +17,24 @@ export class Manager {
     private readonly analystService: AnalystService,
     private readonly exchangeService: ExchangeService,
     private readonly tradingService: TradingService,
+    private readonly maintenanceService: MaintenanceService,
     private readonly evaluationRepository: EvaluationRepository,
     private readonly positionRepository: PositionRepository,
     private readonly settings: Settings,
   ) {}
+
+  async start(): Promise<void> {
+    await this.maintenanceService.bnbRefill()
+    for (const symbol of this.settings.strategy.symbols) {
+      try {
+        console.log(`Trading bot analyzing ${symbol}...`)
+        await this.execute(symbol)
+      } catch (error) {
+        console.error(`Error running trading bot analyzing ${symbol}:`, error)
+      }
+    }
+  }
+
   async execute(symbol: string): Promise<void> {
     const candles: Candle[] = await this.exchangeService.getCandles(symbol)
     const currentPrice = candles[candles.length - 1].closePrice

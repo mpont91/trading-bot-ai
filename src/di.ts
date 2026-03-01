@@ -137,6 +137,7 @@ export class Container {
         this.getAnalystService(),
         this.getExchangeService(),
         this.getTradingService(),
+        this.getMaintenanceService(),
         this.getEvaluationRepository(),
         this.getPositionRepository(),
         this.getSettings(),
