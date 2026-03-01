@@ -40,6 +40,9 @@ const scripts: Record<string, Fn> = {
   'exchange-submit-order': async (args: string[]) => {
     await (await import('./exchange/exchange-submit-order')).default(args)
   },
+  'maintenance-bnb-refill': async () => {
+    await (await import('./maintenance/maintenance-bnb-refill')).default()
+  },
   'order-repository-save-fake': async () => {
     await (
       await import('./order-repository/order-repository-save-fake')

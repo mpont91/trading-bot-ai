@@ -6,6 +6,7 @@ const BINANCE_STEP_SIZES: Record<string, number> = {
   DOGEUSDC: 1,
   BCHUSDC: 0.001,
   ETCUSDC: 0.01,
+  BNBUSDC: 0.001,
 }
 
 export function getStepSize(symbol: string): number {

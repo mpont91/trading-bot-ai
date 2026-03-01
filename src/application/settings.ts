@@ -56,4 +56,8 @@ export const settings: Settings = {
     minConfidenceThreshold: 0.7,
     maxAllocationPercentage: 0.95,
   },
+  maintenance: {
+    bnbMinThreshold: 0.03,
+    bnbRefillAmountUsd: 20,
+  },
 }
