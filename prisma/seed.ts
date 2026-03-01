@@ -5,7 +5,9 @@ import { Container } from '../src/di'
 import { OrderSide } from '../src/domain/types/order'
 import { prisma } from '../src/infrastructure/db/prisma-client'
 import { PositionStatus } from '../src/domain/types/position'
+import { Logger } from '../src/domain/helpers/logger-helper'
 
+const logger = new Logger('🌱  Seed')
 const settings = Container.getSettings()
 const TOTAL_POSITIONS_CLOSED = 50
 const now = new Date()
@@ -14,7 +16,7 @@ const fiveDaysAgo = new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000)
 const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000)
 
 async function main() {
-  console.log('🌱  Initializing seeding...')
+  logger.info('Initializing seeding...')
 
   await reset()
 
@@ -24,14 +26,14 @@ async function main() {
 }
 
 async function reset() {
-  console.log('Deleting all data...')
+  logger.warn('Deleting all data...')
   await prisma.position.deleteMany()
   await prisma.order.deleteMany()
   await prisma.evaluation.deleteMany()
 }
 
 async function PositionsClosed() {
-  console.log('Creating closed positions...')
+  logger.info('Creating closed positions...')
   for (let i = 0; i < TOTAL_POSITIONS_CLOSED; i++) {
     const symbol = faker.helpers.arrayElement(settings.strategy.symbols)
     const quantity = faker.number.float({ min: 0.1, max: 5, fractionDigits: 2 })
@@ -78,7 +80,7 @@ async function PositionsClosed() {
 }
 
 async function positionsOpened() {
-  console.log('Creating opened positions...')
+  logger.info('Creating opened positions...')
 
   for (const symbol of settings.strategy.symbols.slice(0, 3)) {
     const { quantity, price: entryPrice } = generateTradeData()
@@ -201,8 +203,8 @@ async function createSellLeg(
 }
 
 main()
-  .catch((e) => {
-    console.error(e)
+  .catch((error) => {
+    logger.error('Error seeding database:', error)
     process.exit(1)
   })
   .finally(async () => {

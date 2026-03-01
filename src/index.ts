@@ -1,23 +1,26 @@
 import { server } from './server'
 import { bot } from './bot'
+import { Logger } from './domain/helpers/logger-helper'
+
+const logger = new Logger('🚀  App')
 
 class App {
   async start(): Promise<void> {
     if (process.env.DISABLE_SERVER !== 'true') {
-      console.log('Starting API server...')
+      logger.info('Starting API server...')
       server()
     } else {
-      console.log('API server is disabled. Skipping...')
+      logger.warn('API server is disabled. Skipping...')
     }
 
     if (process.env.DISABLE_BOT !== 'true') {
-      console.log('Starting BOT...')
+      logger.info('Starting Bot...')
       await bot()
     } else {
-      console.log('BOT is disabled. Skipping...')
+      logger.warn('Bot is disabled. Skipping...')
     }
   }
 }
 
 const app: App = new App()
-app.start().catch(console.error)
+app.start().catch((error) => logger.error(`Fatal error App:`, error))
