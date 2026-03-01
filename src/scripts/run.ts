@@ -1,4 +1,8 @@
+import { Logger } from '../domain/helpers/logger-helper'
+
 type Fn = (args: string[]) => Promise<void>
+
+const logger = new Logger('🕹️  Script')
 
 const scripts: Record<string, Fn> = {
   'advisor-advice-without-position': async (args: string[]) => {
@@ -40,6 +44,9 @@ const scripts: Record<string, Fn> = {
   'exchange-submit-order': async (args: string[]) => {
     await (await import('./exchange/exchange-submit-order')).default(args)
   },
+  'exchange-submit-test-order': async (args: string[]) => {
+    await (await import('./exchange/exchange-submit-test-order')).default(args)
+  },
   'maintenance-bnb-refill': async () => {
     await (await import('./maintenance/maintenance-bnb-refill')).default()
   },
@@ -67,7 +74,7 @@ async function main(): Promise<void> {
   const script = scripts[cmd]
 
   if (!script) {
-    console.error(`Unknown script: ${cmd}`)
+    logger.error(`Unknown script: ${cmd}`)
     process.exit(1)
   }
 
@@ -75,6 +82,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((error) => {
-  console.error('Script failed:', error)
+  logger.error('Script failed:', error)
   process.exit(1)
 })

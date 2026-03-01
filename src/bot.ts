@@ -1,15 +1,18 @@
 import { Container } from './di'
+import { Logger } from './domain/helpers/logger-helper'
+
+const logger = new Logger('🤖  Bot')
 
 export const bot = async (): Promise<void> => {
   const manager = Container.getManager()
   const settings = Container.getSettings()
 
   const run = async () => {
-    console.log(`Trading bot running: ${new Date().toLocaleTimeString()}`)
+    logger.info(`Trading bot starting: ${new Date().toLocaleTimeString()}`)
     try {
       await manager.start()
     } catch (error) {
-      console.error(`Error running trading bot:`, error)
+      logger.error(`Fatal error running trading bot:`, error)
     }
   }
 

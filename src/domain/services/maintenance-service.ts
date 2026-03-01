@@ -1,8 +1,11 @@
 import { ExchangeService } from './exchange-service'
 import { MaintenanceSettings } from '../types/settings'
 import { OrderRequest } from '../types/order'
+import { Logger } from '../helpers/logger-helper'
 
 export class MaintenanceService {
+  private readonly logger = new Logger('🛠️  Maintenance-Service')
+
   constructor(
     private readonly exchangeService: ExchangeService,
     private readonly settings: MaintenanceSettings,
@@ -13,8 +16,8 @@ export class MaintenanceService {
 
     if (bnbBalance >= this.settings.bnbMinThreshold) return
 
-    console.log(
-      `[🛠️ Maintenance-Service] BNB balance is low (${bnbBalance.toFixed(4)}). Refilling...`,
+    this.logger.info(
+      `BNB balance is low (${bnbBalance.toFixed(4)}). Refilling...`,
     )
 
     const bnbPrice = await this.exchangeService.getPrice('BNBUSDC')
@@ -27,8 +30,8 @@ export class MaintenanceService {
     }
     await this.exchangeService.submitOrder(orderRequest)
 
-    console.log(
-      `[🛠️ Maintenance-Service] ✅ Refill completed. Bought ~${quantityToBuy.toFixed(4)} BNB @ $${this.settings.bnbRefillAmountUsd}.`,
+    this.logger.info(
+      `Refill completed. Bought ~${quantityToBuy.toFixed(4)} BNB @ $${this.settings.bnbRefillAmountUsd}.`,
     )
   }
 }

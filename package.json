@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@binance/connector-typescript": "^0.3.16",
+    "@colors/colors": "^1.6.0",
     "@google/generative-ai": "^0.24.1",
     "@prisma/adapter-pg": "^7.4.0",
     "@prisma/client": "^7.4.0",

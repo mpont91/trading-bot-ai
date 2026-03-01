@@ -4,8 +4,11 @@ import { Order, OrderSide } from '../types/order'
 import { OrderRepository } from '../../application/repositories/order-repository'
 import { PositionRepository } from '../../application/repositories/position-repository'
 import { Position, PositionStatus } from '../types/position'
+import { Logger } from '../helpers/logger-helper'
 
 export class TradingService {
+  private readonly logger = new Logger('📈  Trading-Service')
+
   constructor(
     private readonly exchangeService: ExchangeService,
     private readonly orderRepository: OrderRepository,
@@ -44,8 +47,8 @@ export class TradingService {
     const price = await this.exchangeService.getPrice(symbol)
     const rawQuantity = amount / price
 
-    console.log(
-      `[Trading-Service] 🚀 BUYING ${symbol}: Investing $${amount} (~${rawQuantity.toFixed(4)} coins)`,
+    this.logger.info(
+      `Buying ${symbol}: Investing $${amount} (~${rawQuantity.toFixed(4)} coins)`,
     )
 
     const order: Order = await this.exchangeService.submitOrder({
@@ -80,8 +83,8 @@ export class TradingService {
     const quantity = await this.exchangeService.getBalance(coinName)
 
     if (quantity <= 0) {
-      console.error(
-        `[Trading-Service] 🚨 Critical: DB says OPEN but Wallet is EMPTY for ${symbol}. Marking as CLOSED manually.`,
+      this.logger.warn(
+        `Database says position is open, but Wallet is empty for ${symbol}. Marking position as closed manually.`,
       )
       await this.positionRepository.save({
         ...position,
@@ -90,9 +93,7 @@ export class TradingService {
       return
     }
 
-    console.log(
-      `[Trading-Service] 🛑 SELLING ALL ${coinName}: ${quantity} coins`,
-    )
+    this.logger.info(`Selling all ${coinName}: ${quantity} coins`)
 
     const order: Order = await this.exchangeService.submitOrder({
       symbol,
@@ -121,8 +122,8 @@ export class TradingService {
       entryTime: position.entryTime,
     })
 
-    console.log(
-      `[Trading-Service] 💰 Position Closed. PnL: ${pnl.toFixed(2)} USD (${pnlPercent.toFixed(2)}%)`,
+    this.logger.success(
+      `Position Closed. PnL: ${pnl.toFixed(2)} USD (${pnlPercent.toFixed(2)}%)`,
     )
   }
 
