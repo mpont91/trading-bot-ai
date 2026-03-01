@@ -20,8 +20,6 @@ import { PrismaPositionRepository } from './infrastructure/repositories/prisma-p
 import { PerformanceRepository } from './application/repositories/performance-repository'
 import { PrismaPerformanceRepository } from './infrastructure/repositories/prisma-performance-respository'
 import { PortfolioService } from './domain/services/portfolio-service'
-import { PortfolioRepository } from './application/repositories/portfolio-repository'
-import { PrismaPortfolioRepository } from './infrastructure/repositories/prisma-portfolio-repository'
 
 export class Container {
   private static exchangeService?: ExchangeService
@@ -33,7 +31,6 @@ export class Container {
   private static orderRepository?: OrderRepository
   private static positionRepository?: PositionRepository
   private static performanceRepository?: PerformanceRepository
-  private static portfolioRepository?: PortfolioRepository
   private static manager?: Manager
 
   static getSettings() {
@@ -84,11 +81,9 @@ export class Container {
     if (!this.portfolioService) {
       const exchangeService = this.getExchangeService()
       const tradingService = this.getTradingService()
-      const portfolioRepository = this.getPortfolioRepository()
       this.portfolioService = new PortfolioService(
         exchangeService,
         tradingService,
-        portfolioRepository,
       )
     }
     return this.portfolioService
@@ -120,13 +115,6 @@ export class Container {
       this.performanceRepository = new PrismaPerformanceRepository()
     }
     return this.performanceRepository
-  }
-
-  static getPortfolioRepository(): PortfolioRepository {
-    if (!this.portfolioRepository) {
-      this.portfolioRepository = new PrismaPortfolioRepository()
-    }
-    return this.portfolioRepository
   }
 
   static getManager(): Manager {

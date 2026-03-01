@@ -4,7 +4,7 @@ import { Portfolio } from '../../domain/types/portfolio'
 
 export default async function (): Promise<void> {
   const portfolioService: PortfolioService = Container.getPortfolioService()
-  const response: Portfolio = await portfolioService.record()
+  const response: Portfolio = await portfolioService.getPortfolio()
 
   console.dir(response, { depth: null })
 }

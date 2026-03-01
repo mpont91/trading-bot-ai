@@ -62,7 +62,7 @@ router.get(
 router.get(
   '/portfolio',
   asyncHandler((request: Request, response: Response) =>
-    portfolioController.getLatest(request, response),
+    portfolioController.getPortfolio(request, response),
   ),
 )
 
