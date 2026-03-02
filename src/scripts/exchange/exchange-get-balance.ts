@@ -1,6 +1,7 @@
 import { Container } from '../../di'
 import { ExchangeService } from '../../domain/services/exchange-service'
 import { z } from 'zod'
+import { contextScript } from '../run'
 
 const requestSchema = z.object({
   symbol: z.string(),
@@ -13,8 +14,9 @@ export default async function (args: string[]): Promise<void> {
     symbol: symbolRequest,
   })
 
+  const loggerService = Container.getLoggerService()
   const exchangeService: ExchangeService = Container.getExchangeService()
   const response: number = await exchangeService.getBalance(symbol)
 
-  console.log(response)
+  loggerService.debug(contextScript, `Balance: ${response} ${symbol}`)
 }

@@ -2,11 +2,12 @@ import express, { type Express } from 'express'
 import cors from 'cors'
 import routes from './infrastructure/web/routes'
 import { errorHandler } from './infrastructure/web/middleware/error-handler'
-import { Logger } from './domain/helpers/logger-helper'
+import { Container } from './di'
 
 const app: Express = express()
 const port: string | number = process.env.PORT || 3000
-const logger = new Logger('🖥️  Server')
+const context = '🖥️  Server'
+const loggerService = Container.getLoggerService()
 
 app.use(
   cors({
@@ -20,6 +21,6 @@ app.use(errorHandler)
 
 export const server = (): void => {
   app.listen(port, (): void => {
-    logger.info(`Server running at http://localhost:${port}`)
+    loggerService.debug(context, `Server running at http://localhost:${port}`)
   })
 }

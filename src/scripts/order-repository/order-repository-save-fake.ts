@@ -1,8 +1,10 @@
 import { Container } from '../../di'
 import { OrderRepository } from '../../application/repositories/order-repository'
 import { Order } from '../../domain/types/order'
+import { contextScript } from '../run'
 
 export default async function (): Promise<void> {
+  const loggerService = Container.getLoggerService()
   const orderRepository: OrderRepository = Container.getOrderRepository()
   const fakeOrder: Order = {
     exchangeOrderId: '1000000000001',
@@ -14,5 +16,6 @@ export default async function (): Promise<void> {
     fees: 0.00021212,
   }
 
-  await orderRepository.save(fakeOrder)
+  const order = await orderRepository.save(fakeOrder)
+  loggerService.dump(contextScript, 'Fake order saved:', order)
 }

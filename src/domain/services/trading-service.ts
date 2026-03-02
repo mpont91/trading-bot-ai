@@ -4,12 +4,13 @@ import { Order, OrderSide } from '../types/order'
 import { OrderRepository } from '../../application/repositories/order-repository'
 import { PositionRepository } from '../../application/repositories/position-repository'
 import { Position, PositionStatus } from '../types/position'
-import { Logger } from '../helpers/logger-helper'
+import { LoggerService } from './logger-service'
 
 export class TradingService {
-  private readonly logger = new Logger('📈  Trading-Service')
+  private readonly context = '📈  Trading-Service'
 
   constructor(
+    private readonly loggerService: LoggerService,
     private readonly exchangeService: ExchangeService,
     private readonly orderRepository: OrderRepository,
     private readonly positionRepository: PositionRepository,
@@ -47,7 +48,8 @@ export class TradingService {
     const price = await this.exchangeService.getPrice(symbol)
     const rawQuantity = amount / price
 
-    this.logger.info(
+    this.loggerService.info(
+      this.context,
       `Buying ${symbol}: Investing $${amount} (~${rawQuantity.toFixed(4)} coins)`,
     )
 
@@ -83,7 +85,8 @@ export class TradingService {
     const quantity = await this.exchangeService.getBalance(coinName)
 
     if (quantity <= 0) {
-      this.logger.warn(
+      this.loggerService.warn(
+        this.context,
         `Database says position is open, but Wallet is empty for ${symbol}. Marking position as closed manually.`,
       )
       await this.positionRepository.save({
@@ -93,7 +96,10 @@ export class TradingService {
       return
     }
 
-    this.logger.info(`Selling all ${coinName}: ${quantity} coins`)
+    this.loggerService.info(
+      this.context,
+      `Selling all ${coinName}: ${quantity} coins`,
+    )
 
     const order: Order = await this.exchangeService.submitOrder({
       symbol,
@@ -122,7 +128,8 @@ export class TradingService {
       entryTime: position.entryTime,
     })
 
-    this.logger.success(
+    this.loggerService.success(
+      this.context,
       `Position Closed. PnL: ${pnl.toFixed(2)} USD (${pnlPercent.toFixed(2)}%)`,
     )
   }

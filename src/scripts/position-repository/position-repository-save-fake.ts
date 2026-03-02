@@ -3,12 +3,14 @@ import { PositionRepository } from '../../application/repositories/position-repo
 import { Position } from '../../domain/types/position'
 import { OrderRepository } from '../../application/repositories/order-repository'
 import { Order } from '../../domain/types/order'
+import { contextScript } from '../run'
 
 export default async function (): Promise<void> {
   const symbol = 'ETHUSDC'
   const quantity = 0.01
   const price = 1978.52
 
+  const loggerService = Container.getLoggerService()
   const orderRepository: OrderRepository = Container.getOrderRepository()
 
   const fakeOrder: Order = {
@@ -35,5 +37,6 @@ export default async function (): Promise<void> {
     buyOrderId: fakeOrderCreated.id!,
   }
 
-  await positionRepository.save(fakePosition)
+  const position = await positionRepository.save(fakePosition)
+  loggerService.dump(contextScript, 'Fake position saved:', position)
 }

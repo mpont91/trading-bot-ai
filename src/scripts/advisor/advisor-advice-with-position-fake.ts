@@ -7,9 +7,11 @@ import { AdvisorService } from '../../domain/services/advisor-service'
 import { Advice } from '../../domain/types/advice'
 import { Position } from '../../domain/types/position'
 import { PositionStatus } from '@prisma/client'
+import { contextScript } from '../run'
 
 export default async function (): Promise<void> {
   const symbol = 'BTCUSDC'
+  const loggerService = Container.getLoggerService()
   const exchangeService: ExchangeService = Container.getExchangeService()
   const candles: Candle[] = await exchangeService.getCandles(symbol)
   const currentPrice = candles[candles.length - 1].closePrice
@@ -25,7 +27,7 @@ export default async function (): Promise<void> {
     position,
   )
 
-  console.dir(response, { depth: null })
+  loggerService.dump(contextScript, 'Advice:', response)
 }
 
 function createFakePosition(symbol: string, currentPrice: number): Position {

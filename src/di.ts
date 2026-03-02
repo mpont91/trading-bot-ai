@@ -21,6 +21,9 @@ import { PerformanceRepository } from './application/repositories/performance-re
 import { PrismaPerformanceRepository } from './infrastructure/repositories/prisma-performance-respository'
 import { PortfolioService } from './domain/services/portfolio-service'
 import { MaintenanceService } from './domain/services/maintenance-service'
+import { ActivityRepository } from './application/repositories/activity-repository'
+import { LoggerService } from './domain/services/logger-service'
+import { PrismaActivityRepository } from './infrastructure/repositories/prisma-activity-repository'
 
 export class Container {
   private static exchangeService?: ExchangeService
@@ -29,10 +32,12 @@ export class Container {
   private static tradingService?: TradingService
   private static portfolioService?: PortfolioService
   private static maintenanceService?: MaintenanceService
+  private static loggerService?: LoggerService
   private static evaluationRepository?: EvaluationRepository
   private static orderRepository?: OrderRepository
   private static positionRepository?: PositionRepository
   private static performanceRepository?: PerformanceRepository
+  private static activityRepository?: ActivityRepository
   private static manager?: Manager
 
   static getSettings() {
@@ -43,7 +48,11 @@ export class Container {
     if (!this.exchangeService) {
       const binanceSpot: BinanceSpot = new BinanceSpot(settings.binance)
       const exchange: Exchange = new BinanceClient(binanceSpot)
-      this.exchangeService = new ExchangeService(exchange, settings.strategy)
+      this.exchangeService = new ExchangeService(
+        this.getLoggerService(),
+        exchange,
+        settings.strategy,
+      )
     }
     return this.exchangeService
   }
@@ -66,13 +75,11 @@ export class Container {
 
   static getTradingService(): TradingService {
     if (!this.tradingService) {
-      const exchangeService = this.getExchangeService()
-      const orderRepository = this.getOrderRepository()
-      const positionRepository = this.getPositionRepository()
       this.tradingService = new TradingService(
-        exchangeService,
-        orderRepository,
-        positionRepository,
+        this.getLoggerService(),
+        this.getExchangeService(),
+        this.getOrderRepository(),
+        this.getPositionRepository(),
         settings,
       )
     }
@@ -81,11 +88,10 @@ export class Container {
 
   static getPortfolioService(): PortfolioService {
     if (!this.portfolioService) {
-      const exchangeService = this.getExchangeService()
-      const tradingService = this.getTradingService()
       this.portfolioService = new PortfolioService(
-        exchangeService,
-        tradingService,
+        this.getLoggerService(),
+        this.getExchangeService(),
+        this.getTradingService(),
       )
     }
     return this.portfolioService
@@ -93,13 +99,20 @@ export class Container {
 
   static getMaintenanceService(): MaintenanceService {
     if (!this.maintenanceService) {
-      const exchangeService = this.getExchangeService()
       this.maintenanceService = new MaintenanceService(
-        exchangeService,
+        this.getLoggerService(),
+        this.getExchangeService(),
         settings.maintenance,
       )
     }
     return this.maintenanceService
+  }
+
+  static getLoggerService(): LoggerService {
+    if (!this.loggerService) {
+      this.loggerService = new LoggerService(this.getActivityRepository())
+    }
+    return this.loggerService
   }
 
   static getEvaluationRepository(): EvaluationRepository {
@@ -130,9 +143,17 @@ export class Container {
     return this.performanceRepository
   }
 
+  static getActivityRepository(): ActivityRepository {
+    if (!this.activityRepository) {
+      this.activityRepository = new PrismaActivityRepository()
+    }
+    return this.activityRepository
+  }
+
   static getManager(): Manager {
     if (!this.manager) {
       this.manager = new Manager(
+        this.getLoggerService(),
         this.getAdvisorService(),
         this.getAnalystService(),
         this.getExchangeService(),

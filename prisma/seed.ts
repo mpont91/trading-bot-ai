@@ -5,9 +5,10 @@ import { Container } from '../src/di'
 import { OrderSide } from '../src/domain/types/order'
 import { prisma } from '../src/infrastructure/db/prisma-client'
 import { PositionStatus } from '../src/domain/types/position'
-import { Logger } from '../src/domain/helpers/logger-helper'
+import { LoggerService } from '../src/domain/services/logger-service'
 
-const logger = new Logger('🌱  Seed')
+const context = '🌱  Seed'
+const loggerService: LoggerService = Container.getLoggerService()
 const settings = Container.getSettings()
 const TOTAL_POSITIONS_CLOSED = 50
 const now = new Date()
@@ -16,7 +17,7 @@ const fiveDaysAgo = new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000)
 const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000)
 
 async function main() {
-  logger.info('Initializing seeding...')
+  loggerService.debug(context, 'Initializing seeding...')
 
   await reset()
 
@@ -26,14 +27,14 @@ async function main() {
 }
 
 async function reset() {
-  logger.warn('Deleting all data...')
+  loggerService.debug(context, 'Deleting all data...')
   await prisma.position.deleteMany()
   await prisma.order.deleteMany()
   await prisma.evaluation.deleteMany()
 }
 
 async function PositionsClosed() {
-  logger.info('Creating closed positions...')
+  loggerService.debug(context, 'Creating closed positions...')
   for (let i = 0; i < TOTAL_POSITIONS_CLOSED; i++) {
     const symbol = faker.helpers.arrayElement(settings.strategy.symbols)
     const quantity = faker.number.float({ min: 0.1, max: 5, fractionDigits: 2 })
@@ -80,7 +81,7 @@ async function PositionsClosed() {
 }
 
 async function positionsOpened() {
-  logger.info('Creating opened positions...')
+  loggerService.debug(context, 'Creating opened positions...')
 
   for (const symbol of settings.strategy.symbols.slice(0, 3)) {
     const { quantity, price: entryPrice } = generateTradeData()
@@ -204,7 +205,7 @@ async function createSellLeg(
 
 main()
   .catch((error) => {
-    logger.error('Error seeding database:', error)
+    loggerService.error(context, 'Error seeding database:', error)
     process.exit(1)
   })
   .finally(async () => {

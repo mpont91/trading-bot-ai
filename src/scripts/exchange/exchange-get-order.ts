@@ -2,6 +2,7 @@ import { Container } from '../../di'
 import { ExchangeService } from '../../domain/services/exchange-service'
 import { Order } from '../../domain/types/order'
 import { z } from 'zod'
+import { contextScript } from '../run'
 
 const requestSchema = z.object({
   symbol: z.string(),
@@ -16,8 +17,9 @@ export default async function (args: string[]): Promise<void> {
     orderId: orderIdRequest,
   })
 
+  const loggerService = Container.getLoggerService()
   const exchangeService: ExchangeService = Container.getExchangeService()
   const response: Order = await exchangeService.getOrder(symbol, orderId)
 
-  console.dir(response, { depth: null })
+  loggerService.dump(contextScript, 'Order:', response)
 }

@@ -2,6 +2,7 @@ import { Container } from '../../di'
 import { z } from 'zod'
 import { OrderRequest, orderSideSchema } from '../../domain/types/order'
 import { ExchangeService } from '../../domain/services/exchange-service'
+import { contextScript } from '../run'
 
 const requestSchema = z.object({
   symbol: z.string(),
@@ -18,6 +19,9 @@ export default async function (args: string[]): Promise<void> {
     quantity,
   })
 
+  const loggerService = Container.getLoggerService()
   const exchangeService: ExchangeService = Container.getExchangeService()
   await exchangeService.submitTestOrder(orderRequest)
+
+  loggerService.debug(contextScript, 'Test order submitted correctly')
 }

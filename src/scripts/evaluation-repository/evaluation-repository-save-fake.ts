@@ -1,8 +1,10 @@
 import { Container } from '../../di'
 import { EvaluationRepository } from '../../application/repositories/evaluation-repository'
 import { Evaluation } from '../../domain/types/evaluation'
+import { contextScript } from '../run'
 
 export default async function (): Promise<void> {
+  const loggerService = Container.getLoggerService()
   const evaluationRepository: EvaluationRepository =
     Container.getEvaluationRepository()
 
@@ -17,4 +19,6 @@ export default async function (): Promise<void> {
   }
 
   await evaluationRepository.save(fakeEvaluation)
+
+  loggerService.debug(contextScript, 'Fake evaluation saved')
 }

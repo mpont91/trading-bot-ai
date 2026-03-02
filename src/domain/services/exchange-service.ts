@@ -3,12 +3,13 @@ import { type Coin } from '../types/coin'
 import { Candle } from '../types/candle'
 import { StrategySettings } from '../types/settings'
 import { Order, OrderRequest } from '../types/order'
-import { Logger } from '../helpers/logger-helper'
+import { LoggerService } from './logger-service'
 
 export class ExchangeService {
-  private readonly logger = new Logger('💱  Exchange-Service')
+  private readonly context = '💱  Exchange-Service'
 
   constructor(
+    private readonly loggerService: LoggerService,
     private readonly api: Exchange,
     private readonly settings: StrategySettings,
   ) {}
@@ -32,15 +33,20 @@ export class ExchangeService {
   }
 
   async submitOrder(orderRequest: OrderRequest): Promise<Order> {
-    this.logger.info(
+    this.loggerService.info(
+      this.context,
       `Submit order: ${orderRequest.side} ${orderRequest.quantity} ${orderRequest.symbol}`,
     )
     try {
       const order = await this.api.submitOrder(orderRequest)
-      this.logger.success(`Order executed successfully! ID: ${order.id}`)
+      this.loggerService.success(
+        this.context,
+        `Order executed successfully! ID: ${order.id}`,
+      )
       return order
     } catch (error) {
-      this.logger.error(
+      this.loggerService.error(
+        this.context,
         `Failed to execute order for ${orderRequest.symbol}`,
         error,
       )
@@ -49,17 +55,20 @@ export class ExchangeService {
   }
 
   async submitTestOrder(orderRequest: OrderRequest): Promise<void> {
-    this.logger.info(
+    this.loggerService.info(
+      this.context,
       `Submit test order: ${orderRequest.side} ${orderRequest.quantity} ${orderRequest.symbol}`,
     )
 
     try {
       await this.api.submitTestOrder(orderRequest)
-      this.logger.success(
+      this.loggerService.success(
+        this.context,
         `Test order passed validation: ${orderRequest.symbol}`,
       )
     } catch (error) {
-      this.logger.error(
+      this.loggerService.error(
+        this.context,
         `Test order validation failed for ${orderRequest.symbol}`,
         error,
       )

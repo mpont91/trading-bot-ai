@@ -1,8 +1,9 @@
-import { Logger } from '../domain/helpers/logger-helper'
+import { Container } from '../di'
 
 type Fn = (args: string[]) => Promise<void>
 
-const logger = new Logger('🕹️  Script')
+export const contextScript = '🕹️  Script'
+const loggerService = Container.getLoggerService()
 
 const scripts: Record<string, Fn> = {
   'advisor-advice-without-position': async (args: string[]) => {
@@ -74,7 +75,7 @@ async function main(): Promise<void> {
   const script = scripts[cmd]
 
   if (!script) {
-    logger.error(`Unknown script: ${cmd}`)
+    loggerService.error(contextScript, `Unknown script: ${cmd}`)
     process.exit(1)
   }
 
@@ -82,6 +83,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((error) => {
-  logger.error('Script failed:', error)
+  loggerService.error(contextScript, 'Script failed:', error)
   process.exit(1)
 })

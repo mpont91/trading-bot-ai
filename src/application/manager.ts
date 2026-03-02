@@ -10,12 +10,13 @@ import { Position } from '../domain/types/position'
 import { TradingService } from '../domain/services/trading-service'
 import { PositionRepository } from './repositories/position-repository'
 import { MaintenanceService } from '../domain/services/maintenance-service'
-import { Logger } from '../domain/helpers/logger-helper'
+import { LoggerService } from '../domain/services/logger-service'
 
 export class Manager {
-  private readonly logger = new Logger('👔  Manager')
+  private readonly context = '👔  Manager'
 
   constructor(
+    private readonly loggerService: LoggerService,
     private readonly advisorService: AdvisorService,
     private readonly analystService: AnalystService,
     private readonly exchangeService: ExchangeService,
@@ -30,10 +31,14 @@ export class Manager {
     await this.maintenanceService.bnbRefill()
     for (const symbol of this.settings.strategy.symbols) {
       try {
-        this.logger.info(`Analyzing ${symbol}...`)
+        this.loggerService.info(this.context, `Analyzing ${symbol}...`)
         await this.execute(symbol)
       } catch (error) {
-        this.logger.error(`Error analyzing ${symbol}:`, error)
+        this.loggerService.error(
+          this.context,
+          `Error analyzing ${symbol}:`,
+          error,
+        )
       }
     }
   }
@@ -79,7 +84,8 @@ export class Manager {
     }
 
     if (advice.confidence < this.settings.trading.minConfidenceThreshold) {
-      this.logger.warn(
+      this.loggerService.warn(
+        this.context,
         `${advice.action} signal ignored for ${symbol}. Low confidence: ${(advice.confidence * 100).toFixed(1)}%`,
       )
       return
@@ -87,7 +93,8 @@ export class Manager {
 
     if (advice.action === 'BUY') {
       if (position) {
-        this.logger.warn(
+        this.loggerService.warn(
+          this.context,
           `Buy signal ignored for ${symbol}: A position is already opened.`,
         )
         return
@@ -96,7 +103,8 @@ export class Manager {
       const openPositions = await this.positionRepository.countOpen()
 
       if (openPositions >= this.settings.trading.maxOpenSlots) {
-        this.logger.warn(
+        this.loggerService.warn(
+          this.context,
           `Buy signal ignored for ${symbol}: Maximum open slots (${this.settings.trading.maxOpenSlots}) reached.`,
         )
         return
@@ -108,7 +116,8 @@ export class Manager {
 
     if (advice.action === 'SELL') {
       if (!position) {
-        this.logger.warn(
+        this.loggerService.warn(
+          this.context,
           `Sell signal ignored for ${symbol}: No opened position to close.`,
         )
         return

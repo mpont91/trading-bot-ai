@@ -1,13 +1,16 @@
 import { ExchangeService } from './exchange-service'
 import { TradingService } from './trading-service'
 import { Portfolio } from '../types/portfolio'
+import { LoggerService } from './logger-service'
 
 export class PortfolioService {
+  private readonly context = '🏦  Portfolio-Service'
   private portfolio: Portfolio | null = null
   private lastFetchTime: number = 0
   private readonly CACHE_TTL_MS = 5 * 60 * 1000 // 5 min cache
 
   constructor(
+    private readonly loggerService: LoggerService,
     private readonly exchangeService: ExchangeService,
     private readonly tradingService: TradingService,
   ) {}
@@ -32,8 +35,9 @@ export class PortfolioService {
 
       return this.portfolio
     } catch (error) {
-      console.error(
-        '[Portfolio-Service] Error fetching portfolio from exchange:',
+      this.loggerService.error(
+        this.context,
+        'Error fetching portfolio from exchange:',
         error,
       )
 

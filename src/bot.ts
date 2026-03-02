@@ -1,18 +1,21 @@
 import { Container } from './di'
-import { Logger } from './domain/helpers/logger-helper'
 
-const logger = new Logger('🤖  Bot')
+const context = '🤖  Bot'
+const loggerService = Container.getLoggerService()
 
 export const bot = async (): Promise<void> => {
   const manager = Container.getManager()
   const settings = Container.getSettings()
 
   const run = async () => {
-    logger.info(`Trading bot starting: ${new Date().toLocaleTimeString()}`)
+    loggerService.info(
+      context,
+      `Trading bot starting: ${new Date().toLocaleTimeString()}`,
+    )
     try {
       await manager.start()
     } catch (error) {
-      logger.error(`Fatal error running trading bot:`, error)
+      loggerService.error(context, `Fatal error running trading bot:`, error)
     }
   }
 

@@ -1,18 +1,19 @@
 import { Container } from '../../di'
 import { ExchangeService } from '../../domain/services/exchange-service'
 import { Settings } from '../../domain/types/settings'
-import { Logger } from '../../domain/helpers/logger-helper'
+import { LoggerService } from '../../domain/services/logger-service'
 
-const logger = new Logger('🕹️  Script')
+const context = '🕹️  Script'
 const TEST_AMOUNT_USDC = 15
 
 export default async function (): Promise<void> {
   const settings: Settings = Container.getSettings()
   const exchangeService: ExchangeService = Container.getExchangeService()
+  const loggerService: LoggerService = Container.getLoggerService()
 
   for (const symbol of settings.strategy.symbols) {
     try {
-      logger.info(`Checking ${symbol}... `)
+      loggerService.debug(context, `Checking ${symbol}... `)
 
       const price = await exchangeService.getPrice(symbol)
       const quantity = TEST_AMOUNT_USDC / price
@@ -23,9 +24,9 @@ export default async function (): Promise<void> {
         quantity,
       })
 
-      logger.success(`${symbol} OK`)
+      loggerService.debug(context, `${symbol} OK`)
     } catch (error: unknown) {
-      logger.error('Error:', error)
+      loggerService.error(context, 'Error:', error)
     }
   }
 }

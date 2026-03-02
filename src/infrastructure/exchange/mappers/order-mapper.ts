@@ -1,6 +1,10 @@
 import type { RestTradeTypes } from '@binance/connector-typescript'
 import { Order, OrderSide } from '../../../domain/types/order'
 import { mapBinanceToDomainSide } from './side-mapper'
+import { Container } from '../../../di'
+
+const context = '🧮  Order-Mapper'
+const loggerService = Container.getLoggerService()
 
 interface FeeItem {
   commission?: string
@@ -27,7 +31,7 @@ function calculateUsdcFees(
     } else if (asset === baseAsset) {
       return acc + commission * price
     } else {
-      console.warn(`[Mapper] Unknown commission asset: ${asset}`)
+      loggerService.warn(context, `Unknown commission asset: ${asset}`)
       return acc
     }
   }, 0)
