@@ -8,10 +8,7 @@ export const bot = async (): Promise<void> => {
   const settings = Container.getSettings()
 
   const run = async () => {
-    loggerService.info(
-      context,
-      `Trading bot starting: ${new Date().toLocaleTimeString()}`,
-    )
+    loggerService.info(context, `Trading bot starting...`)
     try {
       await manager.start()
     } catch (error) {
