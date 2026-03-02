@@ -4,7 +4,6 @@ import { mapBinanceToDomainSide } from './side-mapper'
 import { Container } from '../../../di'
 
 const context = '🧮  Order-Mapper'
-const loggerService = Container.getLoggerService()
 
 interface FeeItem {
   commission?: string
@@ -31,7 +30,10 @@ function calculateUsdcFees(
     } else if (asset === baseAsset) {
       return acc + commission * price
     } else {
-      loggerService.warn(context, `Unknown commission asset: ${asset}`)
+      Container.getLoggerService().warn(
+        context,
+        `Unknown commission asset: ${asset}`,
+      )
       return acc
     }
   }, 0)

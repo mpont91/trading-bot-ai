@@ -3,10 +3,11 @@ import { bot } from './bot'
 import { Container } from './di'
 
 const context = '🚀  App'
-const loggerService = Container.getLoggerService()
 
 class App {
   async start(): Promise<void> {
+    const loggerService = Container.getLoggerService()
+
     if (process.env.DISABLE_SERVER !== 'true') {
       loggerService.info(context, 'Starting API server...')
       server()
@@ -26,4 +27,6 @@ class App {
 const app: App = new App()
 app
   .start()
-  .catch((error) => loggerService.error(context, `Fatal error App:`, error))
+  .catch((error) =>
+    Container.getLoggerService().error(context, `Fatal error App:`, error),
+  )
