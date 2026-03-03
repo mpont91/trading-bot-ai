@@ -8,15 +8,11 @@ export const bot = async (): Promise<void> => {
   const settings = Container.getSettings()
 
   const run = async () => {
-    loggerService.info(context, `Trading bot starting cycle.`)
+    loggerService.info(context, `Starting cycle.`)
     try {
       await manager.start()
     } catch (error) {
-      loggerService.error(
-        context,
-        `Fatal error running trading bot cycle`,
-        error,
-      )
+      loggerService.error(context, `Fatal error running cycle`, error)
     }
   }
 
