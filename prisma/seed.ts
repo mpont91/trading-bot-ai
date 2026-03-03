@@ -6,11 +6,14 @@ import { OrderSide } from '../src/domain/types/order'
 import { prisma } from '../src/infrastructure/db/prisma-client'
 import { PositionStatus } from '../src/domain/types/position'
 import { LoggerService } from '../src/domain/services/logger-service'
+import { ActivityLevel } from '../src/domain/types/activity'
 
 const context = '🌱  Seed'
 const loggerService: LoggerService = Container.getLoggerService()
 const settings = Container.getSettings()
 const TOTAL_POSITIONS_CLOSED = 50
+const TOTAL_ACTIVITIES = 150
+
 const now = new Date()
 const fourDaysAgo = new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000)
 const fiveDaysAgo = new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000)
@@ -24,6 +27,8 @@ async function main() {
   await PositionsClosed()
 
   await positionsOpened()
+
+  await activities()
 }
 
 async function reset() {
@@ -31,6 +36,7 @@ async function reset() {
   await prisma.position.deleteMany()
   await prisma.order.deleteMany()
   await prisma.evaluation.deleteMany()
+  await prisma.activity.deleteMany()
 }
 
 async function PositionsClosed() {
@@ -201,6 +207,85 @@ async function createSellLeg(
     pnl,
     pnlPercent,
   }
+}
+
+async function activities() {
+  loggerService.debug(context, 'Creating activities...')
+
+  const activitiesToCreate = []
+
+  const appContexts = [
+    '🚀  App',
+    '🤖  Bot',
+    '🚦  Manager',
+    '🧠  Advisor-Service',
+    '📈  Trading-Service',
+    '💱  Exchange-Service',
+    '💼  Portfolio-Service',
+  ]
+
+  for (let i = 0; i < TOTAL_ACTIVITIES; i++) {
+    const level = faker.helpers.weightedArrayElement([
+      { weight: 60, value: ActivityLevel.INFO },
+      { weight: 20, value: ActivityLevel.SUCCESS },
+      { weight: 15, value: ActivityLevel.WARN },
+      { weight: 5, value: ActivityLevel.ERROR },
+    ])
+
+    const context = faker.helpers.arrayElement(appContexts)
+    const symbol = faker.helpers.arrayElement(settings.strategy.symbols)
+
+    let message = ''
+    const errorStack = undefined
+
+    switch (level) {
+      case ActivityLevel.INFO:
+        message = faker.helpers.arrayElement([
+          `Analyzing market conditions for ${symbol}...`,
+          `Trading bot cycle starting.`,
+          `Evaluating open positions for take-profit.`,
+          `Requesting latest 1h candles for ${symbol}.`,
+          `Checking global portfolio balance.`,
+        ])
+        break
+      case ActivityLevel.SUCCESS:
+        message = faker.helpers.arrayElement([
+          `Successfully executed order for ${symbol}.`,
+          `Position closed with profit for ${symbol}.`,
+          `Database connection established.`,
+          `Binance API synchronization complete.`,
+        ])
+        break
+      case ActivityLevel.WARN:
+        message = faker.helpers.arrayElement([
+          `High volatility detected on ${symbol}. Adapting strategy.`,
+          `Binance API rate limit approaching (Weight: 1150).`,
+          `Skipping ${symbol} due to low confidence score (0.45).`,
+          `Slippage higher than expected for ${symbol} order.`,
+        ])
+        break
+      case ActivityLevel.ERROR:
+        message = faker.helpers.arrayElement([
+          `Failed to execute BUY order for ${symbol}: Insufficient balance.`,
+          `Timeout connecting to Binance REST API.`,
+          `Gemini AI model inference failed for ${symbol}.`,
+          `Prisma transaction deadlock detected.`,
+        ])
+        break
+    }
+
+    activitiesToCreate.push({
+      level,
+      context: context,
+      message,
+      error: errorStack,
+      createdAt: faker.date.between({ from: sixtyDaysAgo, to: now }),
+    })
+  }
+
+  await prisma.activity.createMany({
+    data: activitiesToCreate,
+  })
 }
 
 main()

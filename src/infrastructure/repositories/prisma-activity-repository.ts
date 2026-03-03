@@ -48,4 +48,16 @@ export class PrismaActivityRepository implements ActivityRepository {
       ActivityMapper.toDomain,
     )
   }
+
+  async deleteOlderThan(date: Date): Promise<number> {
+    const result = await prisma.activity.deleteMany({
+      where: {
+        createdAt: {
+          lt: date,
+        },
+      },
+    })
+
+    return result.count
+  }
 }

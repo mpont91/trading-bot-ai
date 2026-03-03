@@ -5,4 +5,5 @@ import { ActivityFilter } from '../../domain/filters/activity-filter'
 export interface ActivityRepository {
   save(activity: Activity): Promise<Activity>
   list(filters: ActivityFilter): Promise<Paginated<Activity>>
+  deleteOlderThan(date: Date): Promise<number>
 }

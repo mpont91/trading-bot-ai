@@ -83,6 +83,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((error) => {
-  loggerService.error(contextScript, 'Script failed:', error)
+  loggerService.error(contextScript, 'Script failed', error)
   process.exit(1)
 })

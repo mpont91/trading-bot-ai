@@ -76,9 +76,9 @@ export class TradingService {
       await this.positionRepository.findOpen(symbol)
 
     if (!position) {
-      throw new Error(
-        `[Trading-Service] Inconsistency detected for ${symbol}: closing the position but there is no position in DB. Manual intervention required.`,
-      )
+      const msgError = `Inconsistency detected for ${symbol}: closing the position but there is no position in DB. Manual intervention required.`
+      this.loggerService.error(this.context, msgError)
+      throw new Error(msgError)
     }
 
     const coinName = symbol.replace('USDC', '')

@@ -37,7 +37,7 @@ export class PortfolioService {
     } catch (error) {
       this.loggerService.error(
         this.context,
-        'Error fetching portfolio from exchange:',
+        'Error fetching portfolio from exchange',
         error,
       )
 

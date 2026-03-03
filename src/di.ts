@@ -61,14 +61,14 @@ export class Container {
       const analyst: Analyst = new TechnicalIndicators(
         settings.strategy.analyst,
       )
-      this.analystService = new AnalystService(analyst)
+      this.analystService = new AnalystService(this.getLoggerService(), analyst)
     }
     return this.analystService
   }
   static getAdvisorService(): AdvisorService {
     if (!this.advisorService) {
       const advisor: Advisor = new GeminiClient(settings.gemini)
-      this.advisorService = new AdvisorService(advisor)
+      this.advisorService = new AdvisorService(this.getLoggerService(), advisor)
     }
     return this.advisorService
   }
@@ -102,6 +102,7 @@ export class Container {
       this.maintenanceService = new MaintenanceService(
         this.getLoggerService(),
         this.getExchangeService(),
+        this.getActivityRepository(),
         settings.maintenance,
       )
     }

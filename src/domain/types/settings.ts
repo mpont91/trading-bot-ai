@@ -59,6 +59,7 @@ export const tradingSettingsSchema = z.object({
 export const maintenanceSettingsSchema = z.object({
   bnbMinThreshold: z.number().positive(),
   bnbRefillAmountUsd: z.number().positive(),
+  activityRetentionDays: z.number().positive(),
 })
 
 export const settingsSchema = z.object({

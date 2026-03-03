@@ -59,5 +59,6 @@ export const settings: Settings = {
   maintenance: {
     bnbMinThreshold: 0.03,
     bnbRefillAmountUsd: 20,
+    activityRetentionDays: 7,
   },
 }

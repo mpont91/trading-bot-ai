@@ -13,7 +13,7 @@ export default async function (): Promise<void> {
 
   for (const symbol of settings.strategy.symbols) {
     try {
-      loggerService.debug(context, `Checking ${symbol}... `)
+      loggerService.debug(context, `Checking ${symbol}. `)
 
       const price = await exchangeService.getPrice(symbol)
       const quantity = TEST_AMOUNT_USDC / price
@@ -26,7 +26,7 @@ export default async function (): Promise<void> {
 
       loggerService.debug(context, `${symbol} OK`)
     } catch (error: unknown) {
-      loggerService.error(context, 'Error:', error)
+      loggerService.error(context, `${symbol} Error`, error)
     }
   }
 }

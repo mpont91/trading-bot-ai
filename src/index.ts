@@ -9,17 +9,17 @@ class App {
     const loggerService = Container.getLoggerService()
 
     if (process.env.DISABLE_SERVER !== 'true') {
-      loggerService.info(context, 'Starting API server...')
+      loggerService.info(context, 'Starting API server.')
       server()
     } else {
-      loggerService.debug(context, 'API server is disabled. Skipping...')
+      loggerService.debug(context, 'API server is disabled. Skipping.')
     }
 
     if (process.env.DISABLE_BOT !== 'true') {
-      loggerService.info(context, 'Starting Bot...')
+      loggerService.info(context, 'Starting Bot.')
       await bot()
     } else {
-      loggerService.debug(context, 'Bot is disabled. Skipping...')
+      loggerService.debug(context, 'Bot is disabled. Skipping.')
     }
   }
 }

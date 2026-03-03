@@ -13,7 +13,7 @@ import { MaintenanceService } from '../domain/services/maintenance-service'
 import { LoggerService } from '../domain/services/logger-service'
 
 export class Manager {
-  private readonly context = '👔  Manager'
+  private readonly context = '👑  Manager'
 
   constructor(
     private readonly loggerService: LoggerService,
@@ -29,14 +29,16 @@ export class Manager {
 
   async start(): Promise<void> {
     await this.maintenanceService.bnbRefill()
+    await this.maintenanceService.cleanOldActivity()
+
     for (const symbol of this.settings.strategy.symbols) {
       try {
-        this.loggerService.info(this.context, `Analyzing ${symbol}...`)
+        this.loggerService.info(this.context, `Processing ${symbol}.`)
         await this.execute(symbol)
       } catch (error) {
         this.loggerService.error(
           this.context,
-          `Error analyzing ${symbol}:`,
+          `Error processing ${symbol}`,
           error,
         )
       }
