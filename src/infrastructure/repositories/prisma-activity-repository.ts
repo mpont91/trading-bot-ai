@@ -34,7 +34,7 @@ export class PrismaActivityRepository implements ActivityRepository {
     const [data, total] = await Promise.all([
       prisma.activity.findMany({
         where,
-        orderBy: { createdAt: 'desc' },
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         ...getPaginationParams(page, limit),
       }),
       prisma.activity.count({ where }),

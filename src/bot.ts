@@ -1,22 +1,47 @@
+import cron from 'node-cron'
 import { Container } from './di'
 
 const context = '🤖  Bot'
-const loggerService = Container.getLoggerService()
+let isRunning = false
 
 export const bot = async (): Promise<void> => {
+  const loggerService = Container.getLoggerService()
   const manager = Container.getManager()
   const settings = Container.getSettings()
 
+  loggerService.success(
+    context,
+    `Trading bot scheduled via CRON (${settings.strategy.frecuencyCronExpression}). Waiting for the next tick.`,
+  )
+
   const run = async () => {
-    loggerService.info(context, `Starting cycle.`)
+    if (isRunning) {
+      loggerService.warn(
+        context,
+        'Previous cycle is still running. Skipping this tick to avoid overlapping.',
+      )
+      return
+    }
+
+    isRunning = true
+    loggerService.debug(context, 'Starting scheduled evaluation cycle...')
+
     try {
       await manager.start()
     } catch (error) {
-      loggerService.error(context, `Fatal error running cycle`, error)
+      loggerService.error(context, 'Fatal error during cycle execution', error)
+    } finally {
+      isRunning = false
     }
   }
 
-  await run()
+  if (!cron.validate(settings.strategy.frecuencyCronExpression)) {
+    loggerService.error(
+      context,
+      `Invalid CRON expression in settings: ${settings.strategy.frecuencyCronExpression}`,
+    )
+    process.exit(1)
+  }
 
-  setInterval(run, settings.strategy.intervalMs)
+  cron.schedule(settings.strategy.frecuencyCronExpression, run)
 }

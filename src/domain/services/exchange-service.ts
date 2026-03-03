@@ -41,7 +41,7 @@ export class ExchangeService {
       const order = await this.api.submitOrder(orderRequest)
       this.loggerService.success(
         this.context,
-        `Order executed successfully! ID: ${order.id}`,
+        `Order executed successfully! ${order.symbol} ${order.side} ${order.quantity} @ ${order.price}`,
       )
       return order
     } catch (error) {

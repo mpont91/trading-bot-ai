@@ -45,7 +45,7 @@ export const analystSettingsSchema = z.object({
 
 export const strategySettingsSchema = z.object({
   symbols: z.array(z.string()),
-  intervalMs: z.number().int().positive(),
+  frecuencyCronExpression: z.string(),
   timeFrame: timeFrameSchema,
   analyst: analystSettingsSchema,
 })
