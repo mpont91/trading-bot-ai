@@ -9,9 +9,14 @@ export const bot = async (): Promise<void> => {
   const manager = Container.getManager()
   const settings = Container.getSettings()
 
+  loggerService.debug(
+    context,
+    `Trading bot scheduled via CRON (${settings.strategy.frecuencyCronExpression}).`,
+  )
+
   loggerService.success(
     context,
-    `Trading bot scheduled via CRON (${settings.strategy.frecuencyCronExpression}). Waiting for the next tick.`,
+    `Trading bot scheduled. Waiting for the next cycle.`,
   )
 
   const run = async () => {
@@ -24,7 +29,7 @@ export const bot = async (): Promise<void> => {
     }
 
     isRunning = true
-    loggerService.debug(context, 'Starting scheduled evaluation cycle...')
+    loggerService.info(context, 'Starting scheduled cycle...')
 
     try {
       await manager.start()
