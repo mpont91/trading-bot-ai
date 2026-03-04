@@ -64,9 +64,6 @@ const scripts: Record<string, Fn> = {
       await import('./position-repository/position-repository-save-fake')
     ).default()
   },
-  'trading-get-equity': async () => {
-    await (await import('./trading/trading-get-equity')).default()
-  },
 }
 
 async function main(): Promise<void> {

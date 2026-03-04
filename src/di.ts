@@ -80,6 +80,7 @@ export class Container {
         this.getExchangeService(),
         this.getOrderRepository(),
         this.getPositionRepository(),
+        this.getPortfolioService(),
         settings,
       )
     }
@@ -91,7 +92,7 @@ export class Container {
       this.portfolioService = new PortfolioService(
         this.getLoggerService(),
         this.getExchangeService(),
-        this.getTradingService(),
+        settings.strategy,
       )
     }
     return this.portfolioService

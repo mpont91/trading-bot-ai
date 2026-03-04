@@ -1,7 +1,8 @@
 import { ExchangeService } from './exchange-service'
-import { TradingService } from './trading-service'
 import { Portfolio } from '../types/portfolio'
 import { LoggerService } from './logger-service'
+import { Coin } from '../types/coin'
+import { StrategySettings } from '../types/settings'
 
 export class PortfolioService {
   private readonly context = '🏦  Portfolio-Service'
@@ -12,7 +13,7 @@ export class PortfolioService {
   constructor(
     private readonly loggerService: LoggerService,
     private readonly exchangeService: ExchangeService,
-    private readonly tradingService: TradingService,
+    private readonly settings: StrategySettings,
   ) {}
 
   async getPortfolio(): Promise<Portfolio> {
@@ -29,21 +30,19 @@ export class PortfolioService {
     try {
       this.loggerService.debug(
         this.context,
-        'Cache expired or missing. Fetching fresh portfolio data...',
+        'Cache expired. Calculating portfolio...',
       )
 
-      const equity = await this.tradingService.getEquity()
-      const bnb = await this.exchangeService.getBalance('BNB')
+      const coins: Coin[] = await this.exchangeService.getCoins()
 
-      this.portfolio = {
-        equity,
-        bnb,
-        timestamp: new Date(),
-      }
+      this.portfolio = await this.calculatePortfolio(coins)
+
       this.lastFetchTime = now
 
-      this.loggerService.debug(this.context, 'Portfolio updated successfully.')
-
+      this.loggerService.debug(
+        this.context,
+        'Portfolio valuation updated successfully.',
+      )
       return this.portfolio
     } catch (error) {
       if (this.portfolio) {
@@ -60,6 +59,48 @@ export class PortfolioService {
         error,
       )
       throw error
+    }
+  }
+
+  private async calculatePortfolio(coins: Coin[]): Promise<Portfolio> {
+    const strategyCoins = new Set(
+      this.settings.symbols.map((s) => s.replace('USDC', '')),
+    )
+
+    strategyCoins.add('USDC')
+
+    let totalEquity = 0
+    let tradingEquity = 0
+    let bnbQuantity = 0
+
+    for (const coin of coins) {
+      if (coin.name === 'BNB') {
+        bnbQuantity = coin.quantity
+      }
+
+      let coinEquity = 0
+
+      if (coin.name === 'USDC') {
+        coinEquity = coin.quantity
+      } else {
+        const currentPrice = await this.exchangeService.getPrice(
+          `${coin.name}USDC`,
+        )
+        coinEquity = coin.quantity * currentPrice
+      }
+
+      totalEquity += coinEquity
+
+      if (strategyCoins.has(coin.name)) {
+        tradingEquity += coinEquity
+      }
+    }
+
+    return {
+      totalEquity: totalEquity,
+      tradingEquity: tradingEquity,
+      bnb: bnbQuantity,
+      timestamp: new Date(),
     }
   }
 }

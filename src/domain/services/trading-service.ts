@@ -5,6 +5,7 @@ import { OrderRepository } from '../../application/repositories/order-repository
 import { PositionRepository } from '../../application/repositories/position-repository'
 import { Position, PositionStatus } from '../types/position'
 import { LoggerService } from './logger-service'
+import { PortfolioService } from './portfolio-service'
 
 export class TradingService {
   private readonly context = '📈  Trading-Service'
@@ -14,34 +15,9 @@ export class TradingService {
     private readonly exchangeService: ExchangeService,
     private readonly orderRepository: OrderRepository,
     private readonly positionRepository: PositionRepository,
+    private readonly portfolioService: PortfolioService,
     private readonly settings: Settings,
   ) {}
-
-  async getEquity(): Promise<number> {
-    const coins = await this.exchangeService.getCoins()
-
-    const strategyCoins = new Set(
-      this.settings.strategy.symbols.map((s) => s.replace('USDC', '')),
-    )
-
-    strategyCoins.add('USDC')
-
-    let totalEquity = 0
-
-    for (const coin of coins) {
-      if (!strategyCoins.has(coin.name)) continue
-      if (coin.name === 'USDC') {
-        totalEquity += coin.quantity
-      } else {
-        const currentPrice = await this.exchangeService.getPrice(
-          `${coin.name}USDC`,
-        )
-        totalEquity += coin.quantity * currentPrice
-      }
-    }
-
-    return totalEquity
-  }
 
   async openPosition(symbol: string): Promise<void> {
     const amount = await this.getPositionAmount()
@@ -140,12 +116,12 @@ export class TradingService {
   }
 
   private async getPositionAmount(): Promise<number> {
-    const totalEquity = await this.getEquity()
+    const portfolio = await this.portfolioService.getPortfolio()
 
-    const tradeableEquity =
-      totalEquity * this.settings.trading.maxAllocationPercentage
+    const tradingEquity =
+      portfolio.tradingEquity * this.settings.trading.maxAllocationPercentage
 
-    const amountPerSlot = tradeableEquity / this.settings.trading.maxOpenSlots
+    const amountPerSlot = tradingEquity / this.settings.trading.maxOpenSlots
 
     return Math.floor(amountPerSlot)
   }
