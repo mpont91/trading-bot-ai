@@ -12,6 +12,8 @@ import { PositionRepository } from './repositories/position-repository'
 import { MaintenanceService } from '../domain/services/maintenance-service'
 import { LoggerService } from '../domain/services/logger-service'
 
+type ExecutionResult = 'BOUGHT' | 'SOLD' | 'HELD' | 'IGNORED'
+
 export class Manager {
   private readonly context = '👑  Manager'
 
@@ -31,11 +33,23 @@ export class Manager {
     await this.maintenanceService.bnbRefill()
     await this.maintenanceService.cleanOldActivity()
 
+    const summary = {
+      analyzed: 0,
+      BOUGHT: 0,
+      SOLD: 0,
+      HELD: 0,
+      IGNORED: 0,
+      errors: 0,
+    }
+
     for (const symbol of this.settings.strategy.symbols) {
       try {
         this.loggerService.debug(this.context, `Processing ${symbol}...`)
-        await this.execute(symbol)
+        const result = await this.execute(symbol)
+        summary.analyzed++
+        summary[result]++
       } catch (error) {
+        summary.errors++
         this.loggerService.error(
           this.context,
           `Fatal error processing ${symbol}`,
@@ -43,9 +57,14 @@ export class Manager {
         )
       }
     }
+
+    this.loggerService.info(
+      this.context,
+      `🏁 Cycle completed. 🔍 Analyzed: ${summary.analyzed} ➔ 🛒 Bought: ${summary.BOUGHT} | 💰 Sold: ${summary.SOLD} | ⏸️ Held: ${summary.HELD} | ⚪ Ignored: ${summary.IGNORED} | ⚠️ Errors: ${summary.errors}`,
+    )
   }
 
-  async execute(symbol: string): Promise<void> {
+  async execute(symbol: string): Promise<ExecutionResult> {
     const candles: Candle[] = await this.exchangeService.getCandles(symbol)
     const currentPrice = candles[candles.length - 1].closePrice
 
@@ -86,7 +105,7 @@ export class Manager {
         this.context,
         `Signal is HOLD for ${symbol}. Skipping.`,
       )
-      return
+      return 'HELD'
     }
 
     if (advice.confidence < this.settings.trading.minConfidenceThreshold) {
@@ -94,7 +113,7 @@ export class Manager {
         this.context,
         `${advice.action} signal ignored for ${symbol} due to low confidence: ${(advice.confidence * 100).toFixed(1)}%.`,
       )
-      return
+      return 'IGNORED'
     }
 
     if (advice.action === 'BUY') {
@@ -103,7 +122,7 @@ export class Manager {
           this.context,
           `BUY signal ignored for ${symbol}: A position is already open.`,
         )
-        return
+        return 'IGNORED'
       }
 
       const openPositions = await this.positionRepository.countOpen()
@@ -113,11 +132,11 @@ export class Manager {
           this.context,
           `BUY signal ignored for ${symbol}: Maximum open slots (${this.settings.trading.maxOpenSlots}) reached.`,
         )
-        return
+        return 'IGNORED'
       }
 
       await this.tradingService.openPosition(symbol)
-      return
+      return 'BOUGHT'
     }
 
     if (advice.action === 'SELL') {
@@ -126,11 +145,13 @@ export class Manager {
           this.context,
           `SELL signal ignored for ${symbol}: No open position to close.`,
         )
-        return
+        return 'IGNORED'
       }
 
       await this.tradingService.closePosition(symbol)
-      return
+      return 'SOLD'
     }
+
+    return 'IGNORED'
   }
 }

@@ -8,5 +8,5 @@ export default async function (): Promise<void> {
   const portfolioService: PortfolioService = Container.getPortfolioService()
   const response: Portfolio = await portfolioService.getPortfolio()
 
-  loggerService.dump(contextScript, 'Portfolio:', response)
+  loggerService.dump(contextScript, 'Portfolio:🟩', response)
 }
