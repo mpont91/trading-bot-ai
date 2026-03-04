@@ -8,6 +8,12 @@ export class TechnicalIndicators implements Analyst {
   constructor(private readonly settings: AnalystSettings) {}
 
   calculate(candles: Candle[]): Analysis {
+    if (!candles || candles.length === 0) {
+      throw new Error(
+        'Cannot calculate indicators: Empty candles array provided.',
+      )
+    }
+
     const closePrices = candles.map((c) => c.closePrice)
     const currentPrice = closePrices[closePrices.length - 1]
 

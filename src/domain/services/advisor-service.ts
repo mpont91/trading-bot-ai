@@ -18,9 +18,17 @@ export class AdvisorService {
     position: Position | null,
   ): Promise<Advice> {
     try {
+      this.loggerService.debug(
+        this.context,
+        `Evaluating strategy advice for ${symbol}...`,
+      )
       return this.api.advice(symbol, analysis, position)
     } catch (error) {
-      this.loggerService.error(this.context, 'Error getting advice', error)
+      this.loggerService.error(
+        this.context,
+        `Error getting advice for ${symbol}`,
+        error,
+      )
       throw error
     }
   }

@@ -48,9 +48,9 @@ export class TradingService {
     const price = await this.exchangeService.getPrice(symbol)
     const rawQuantity = amount / price
 
-    this.loggerService.info(
+    this.loggerService.debug(
       this.context,
-      `Buying ${symbol}: Investing $${amount} (~${rawQuantity.toFixed(4)} coins)`,
+      `Allocating $${amount.toFixed(2)} to buy ~${rawQuantity.toFixed(4)} ${symbol}...`,
     )
 
     const order: Order = await this.exchangeService.submitOrder({
@@ -69,6 +69,11 @@ export class TradingService {
       entryTime: savedOrder.createdAt!,
       buyOrderId: savedOrder.id!,
     })
+
+    this.loggerService.success(
+      this.context,
+      `Position Opened for ${symbol} at $${savedOrder.price}.`,
+    )
   }
 
   async closePosition(symbol: string): Promise<void> {
@@ -96,9 +101,9 @@ export class TradingService {
       return
     }
 
-    this.loggerService.info(
+    this.loggerService.debug(
       this.context,
-      `Selling all ${coinName}: ${quantity} coins`,
+      `Preparing to sell ${quantity} ${coinName} to close position...`,
     )
 
     const order: Order = await this.exchangeService.submitOrder({
@@ -130,7 +135,7 @@ export class TradingService {
 
     this.loggerService.success(
       this.context,
-      `Position Closed. PnL: ${pnl.toFixed(2)} USD (${pnlPercent.toFixed(2)}%)`,
+      `Position Closed for ${symbol}. PnL: $${pnl.toFixed(2)} (${pnlPercent.toFixed(2)}%)`,
     )
   }
 

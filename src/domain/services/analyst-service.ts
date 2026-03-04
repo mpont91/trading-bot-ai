@@ -13,6 +13,7 @@ export class AnalystService {
 
   calculate(candles: Candle[]): Analysis {
     try {
+      this.loggerService.debug(this.context, 'Calculating market analysis...')
       return this.api.calculate(candles)
     } catch (error) {
       this.loggerService.error(

@@ -33,21 +33,21 @@ export class ExchangeService {
   }
 
   async submitOrder(orderRequest: OrderRequest): Promise<Order> {
-    this.loggerService.info(
+    this.loggerService.debug(
       this.context,
-      `Submit order: ${orderRequest.side} ${orderRequest.quantity} ${orderRequest.symbol}`,
+      `Submitting ${orderRequest.side} order for ${orderRequest.quantity} ${orderRequest.symbol}...`,
     )
     try {
       const order = await this.api.submitOrder(orderRequest)
       this.loggerService.success(
         this.context,
-        `Order executed successfully! ${order.symbol} ${order.side} ${order.quantity} @ ${order.price}`,
+        `Order executed: ${order.side} ${order.quantity} ${order.symbol} @ ${order.price}`,
       )
       return order
     } catch (error) {
       this.loggerService.error(
         this.context,
-        `Failed to execute order for ${orderRequest.symbol}`,
+        `Failed to execute ${orderRequest.side} order for ${orderRequest.symbol}`,
         error,
       )
       throw error
@@ -55,16 +55,16 @@ export class ExchangeService {
   }
 
   async submitTestOrder(orderRequest: OrderRequest): Promise<void> {
-    this.loggerService.info(
+    this.loggerService.debug(
       this.context,
-      `Submit test order: ${orderRequest.side} ${orderRequest.quantity} ${orderRequest.symbol}`,
+      `Submitting test order: ${orderRequest.side} ${orderRequest.quantity} ${orderRequest.symbol}...`,
     )
 
     try {
       await this.api.submitTestOrder(orderRequest)
       this.loggerService.success(
         this.context,
-        `Test order passed validation: ${orderRequest.symbol}`,
+        `Test order passed validation for ${orderRequest.symbol}`,
       )
     } catch (error) {
       this.loggerService.error(

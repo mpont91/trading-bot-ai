@@ -51,7 +51,7 @@ export class LoggerService {
 
     this.saveActivity(ActivityLevel.ERROR, context, message).catch((error) => {
       console.error(
-        `[${this.context}] ${colors.red('✖')} Error saving error log into DB:`,
+        `[${this.context}] ${colors.red('✖')} Error saving error log into DB`,
         error,
       )
     })
@@ -66,6 +66,7 @@ export class LoggerService {
       level,
       context,
       message,
+      createdAt: new Date(),
     })
   }
 }

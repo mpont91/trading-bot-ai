@@ -19,10 +19,19 @@ export class PortfolioService {
     const now = Date.now()
 
     if (this.portfolio && now - this.lastFetchTime < this.CACHE_TTL_MS) {
+      this.loggerService.debug(
+        this.context,
+        'Returning portfolio data from cache.',
+      )
       return this.portfolio
     }
 
     try {
+      this.loggerService.debug(
+        this.context,
+        'Cache expired or missing. Fetching fresh portfolio data...',
+      )
+
       const equity = await this.tradingService.getEquity()
       const bnb = await this.exchangeService.getBalance('BNB')
 
@@ -33,17 +42,23 @@ export class PortfolioService {
       }
       this.lastFetchTime = now
 
+      this.loggerService.debug(this.context, 'Portfolio updated successfully.')
+
       return this.portfolio
     } catch (error) {
-      this.loggerService.error(
-        this.context,
-        'Error fetching portfolio from exchange',
-        error,
-      )
-
       if (this.portfolio) {
+        this.loggerService.warn(
+          this.context,
+          'Binance API failed. Falling back to stale portfolio data.',
+        )
         return this.portfolio
       }
+
+      this.loggerService.error(
+        this.context,
+        'Critical failure fetching portfolio and no cache available.',
+        error,
+      )
       throw error
     }
   }

@@ -15,13 +15,18 @@ export class MaintenanceService {
   ) {}
 
   async bnbRefill(): Promise<void> {
+    this.loggerService.debug(
+      this.context,
+      'Checking BNB balance for fee reserves...',
+    )
+
     const bnbBalance = await this.exchangeService.getBalance('BNB')
 
     if (bnbBalance >= this.settings.bnbMinThreshold) return
 
     this.loggerService.info(
       this.context,
-      `BNB balance is low (${bnbBalance.toFixed(4)}). Refilling.`,
+      `BNB balance is low (${bnbBalance.toFixed(4)}). Initiating refill.`,
     )
 
     const bnbPrice = await this.exchangeService.getPrice('BNBUSDC')
@@ -34,14 +39,19 @@ export class MaintenanceService {
     }
     await this.exchangeService.submitOrder(orderRequest)
 
-    this.loggerService.info(
+    this.loggerService.debug(
       this.context,
-      `Refill completed. Bought ~${quantityToBuy.toFixed(4)} BNB @ $${this.settings.bnbRefillAmountUsd}.`,
+      `Refill logic completed successfully.`,
     )
   }
 
   async cleanOldActivity(): Promise<void> {
     try {
+      this.loggerService.debug(
+        this.context,
+        'Checking for old activity logs to clean...',
+      )
+
       const cutoffDate = new Date()
       cutoffDate.setDate(
         cutoffDate.getDate() - this.settings.activityRetentionDays,
@@ -53,13 +63,13 @@ export class MaintenanceService {
       if (deletedCount > 0) {
         this.loggerService.success(
           this.context,
-          `Old activity cleaned (${this.settings.activityRetentionDays} retention days): ${deletedCount} old activities removed from DB.`,
+          `Old activity cleaned (${this.settings.activityRetentionDays} retention days): ${deletedCount} logs removed from DB.`,
         )
       }
     } catch (error) {
       this.loggerService.error(
         this.context,
-        'Error cleaning old activity logs:',
+        'Error cleaning old activity logs',
         error,
       )
     }

@@ -33,12 +33,12 @@ export class Manager {
 
     for (const symbol of this.settings.strategy.symbols) {
       try {
-        this.loggerService.info(this.context, `Processing ${symbol}.`)
+        this.loggerService.debug(this.context, `Processing ${symbol}...`)
         await this.execute(symbol)
       } catch (error) {
         this.loggerService.error(
           this.context,
-          `Error processing ${symbol}`,
+          `Fatal error processing ${symbol}`,
           error,
         )
       }
@@ -82,22 +82,26 @@ export class Manager {
     })
 
     if (advice.action === 'HOLD') {
+      this.loggerService.debug(
+        this.context,
+        `Signal is HOLD for ${symbol}. Skipping.`,
+      )
       return
     }
 
     if (advice.confidence < this.settings.trading.minConfidenceThreshold) {
-      this.loggerService.warn(
+      this.loggerService.info(
         this.context,
-        `${advice.action} signal ignored for ${symbol}. Low confidence: ${(advice.confidence * 100).toFixed(1)}%`,
+        `${advice.action} signal ignored for ${symbol} due to low confidence: ${(advice.confidence * 100).toFixed(1)}%.`,
       )
       return
     }
 
     if (advice.action === 'BUY') {
       if (position) {
-        this.loggerService.warn(
+        this.loggerService.info(
           this.context,
-          `Buy signal ignored for ${symbol}: A position is already opened.`,
+          `BUY signal ignored for ${symbol}: A position is already open.`,
         )
         return
       }
@@ -105,9 +109,9 @@ export class Manager {
       const openPositions = await this.positionRepository.countOpen()
 
       if (openPositions >= this.settings.trading.maxOpenSlots) {
-        this.loggerService.warn(
+        this.loggerService.info(
           this.context,
-          `Buy signal ignored for ${symbol}: Maximum open slots (${this.settings.trading.maxOpenSlots}) reached.`,
+          `BUY signal ignored for ${symbol}: Maximum open slots (${this.settings.trading.maxOpenSlots}) reached.`,
         )
         return
       }
@@ -118,9 +122,9 @@ export class Manager {
 
     if (advice.action === 'SELL') {
       if (!position) {
-        this.loggerService.warn(
+        this.loggerService.info(
           this.context,
-          `Sell signal ignored for ${symbol}: No opened position to close.`,
+          `SELL signal ignored for ${symbol}: No open position to close.`,
         )
         return
       }

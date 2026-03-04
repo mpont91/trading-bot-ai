@@ -56,15 +56,11 @@ status:
 
 logs:
 	@echo "📜 [Logs] Connecting live feed (Ctrl+C to exit)..."
-	$(REMOTE_EXEC) $(PM2_CMD) logs $(PM2_NAME)'
+	$(REMOTE_EXEC) $(PM2_CMD) logs $(PM2_NAME) --lines 100'
 
 logs-error:
 	@echo "🚨 [Logs] Showing only ERRORS..."
 	$(REMOTE_EXEC) $(PM2_CMD) logs $(PM2_NAME) --err --lines 100'
-
-logs-history:
-	@echo "📜 [Logs] Fetching deep history (Last 1000 lines)..."
-	$(REMOTE_EXEC) $(PM2_CMD) logs $(PM2_NAME) --lines 1000'
 
 logs-info:
 	@echo "🔍 [Logs] Inspecting log files..."

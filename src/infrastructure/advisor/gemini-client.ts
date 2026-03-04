@@ -19,6 +19,27 @@ export class GeminiClient implements Advisor {
       minTime: settings.bottleneckMinTime,
     })
 
+    this.limiter.on('failed', async (error: unknown, jobInfo) => {
+      const err = error as { status?: number; message?: string }
+      const status = err?.status
+      const message = err?.message || String(error)
+
+      const isTransientError =
+        status === 503 ||
+        status === 429 ||
+        message.includes('503') ||
+        message.includes('429')
+
+      if (isTransientError && jobInfo.retryCount < 3) {
+        const waitTime = Math.pow(2, jobInfo.retryCount) * 2000
+
+        console.warn(
+          `[Gemini API] Transient error detected. Retrying in ${waitTime}ms... (Attempt ${jobInfo.retryCount + 1}/3)`,
+        )
+        return waitTime
+      }
+    })
+
     const googleGenerativeAI = new GoogleGenerativeAI(settings.geminiApiKey)
 
     this.model = googleGenerativeAI.getGenerativeModel({
