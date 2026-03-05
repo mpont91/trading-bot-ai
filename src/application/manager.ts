@@ -60,7 +60,7 @@ export class Manager {
 
     this.loggerService.info(
       this.context,
-      `🏁 Cycle completed. 🔍 Analyzed: ${summary.analyzed} ➔ 🛒 Bought: ${summary.BOUGHT} | 💰 Sold: ${summary.SOLD} | ⏸️ Held: ${summary.HELD} | ⚪ Ignored: ${summary.IGNORED} | ⚠️ Errors: ${summary.errors}`,
+      `🏁 Cycle completed. 🔍 ${summary.analyzed} ➔ 🛒 ${summary.BOUGHT} | 💰 ${summary.SOLD} | ⏸️ ${summary.HELD} | ⚪ ${summary.IGNORED} | ⚠️ ${summary.errors}`,
     )
   }
 
