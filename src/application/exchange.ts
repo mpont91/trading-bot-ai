@@ -6,6 +6,7 @@ import { Order, OrderRequest } from '../domain/types/order'
 export interface Exchange {
   getCoins(): Promise<Coin[]>
   getPrice(symbol: string): Promise<number>
+  getStepSize(symbol: string): Promise<number>
   getCandles(symbol: string, timeFrame: TimeFrame): Promise<Candle[]>
   submitOrder(orderRequest: OrderRequest): Promise<Order>
   submitTestOrder(orderRequest: OrderRequest): Promise<void>

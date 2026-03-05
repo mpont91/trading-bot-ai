@@ -28,6 +28,10 @@ export class ExchangeService {
     return this.api.getPrice(symbol)
   }
 
+  async getStepSize(symbol: string): Promise<number> {
+    return this.api.getStepSize(symbol)
+  }
+
   async getCandles(symbol: string): Promise<Candle[]> {
     return this.api.getCandles(symbol, this.settings.timeFrame)
   }

@@ -18,12 +18,11 @@ import {
   mapBinanceToDomainOrder,
   mapBinanceTradesToDomainOrder,
 } from './mappers/order-mapper'
-import {
-  adjustQuantityToStepSize,
-  getStepSize,
-} from './helpers/step-size-helper'
+import { adjustQuantityToStepSize } from './helpers/step-size-helper'
 
 export class BinanceClient implements Exchange {
+  private readonly stepSizeCache: Map<string, number> = new Map()
+
   constructor(private readonly api: BinanceSpot) {}
 
   async getCoins(): Promise<Coin[]> {
@@ -51,6 +50,35 @@ export class BinanceClient implements Exchange {
     return parseFloat(response.price)
   }
 
+  async getStepSize(symbol: string): Promise<number> {
+    if (this.stepSizeCache.has(symbol)) {
+      return this.stepSizeCache.get(symbol)!
+    }
+
+    const response: RestMarketTypes.exchangeInformationResponse =
+      await this.api.exchangeInformation(symbol)
+
+    const symbolInfo = response.symbols.find((s) => s.symbol === symbol)
+
+    if (!symbolInfo) {
+      throw new Error(`Symbol ${symbol} not found in Binance exchange info`)
+    }
+
+    const lotSizeFilter = symbolInfo.filters.find(
+      (f) => f.filterType === 'LOT_SIZE',
+    )
+
+    if (!lotSizeFilter) {
+      throw new Error(`LOT_SIZE filter not found for ${symbol}`)
+    }
+
+    const stepSize = parseFloat(lotSizeFilter.stepSize)
+
+    this.stepSizeCache.set(symbol, stepSize)
+
+    return stepSize
+  }
+
   async getCandles(symbol: string, timeFrame: TimeFrame): Promise<Candle[]> {
     const binanceTimeFrame: Interval = mapDomainToBinanceTimeFrame(timeFrame)
     const response: RestMarketTypes.klineCandlestickDataResponse[] =
@@ -60,7 +88,7 @@ export class BinanceClient implements Exchange {
   }
 
   async submitOrder(orderRequest: OrderRequest): Promise<Order> {
-    const stepSize = getStepSize(orderRequest.symbol)
+    const stepSize = await this.getStepSize(orderRequest.symbol)
 
     const cleanQuantity = adjustQuantityToStepSize(
       orderRequest.quantity,
@@ -92,7 +120,7 @@ export class BinanceClient implements Exchange {
   }
 
   async submitTestOrder(orderRequest: OrderRequest): Promise<void> {
-    const stepSize = getStepSize(orderRequest.symbol)
+    const stepSize = await this.getStepSize(orderRequest.symbol)
 
     const cleanQuantity = adjustQuantityToStepSize(
       orderRequest.quantity,
