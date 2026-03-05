@@ -26,6 +26,9 @@ export const settings: Settings = {
       'DOGEUSDC',
       'BCHUSDC',
       'ETCUSDC',
+      'LINKUSDC',
+      'NEARUSDC',
+      'DOTUSDC',
     ],
     timeFrame: TimeFrame['1h'],
     analyst: {
