@@ -10,8 +10,7 @@ export const settings: Settings = {
   },
   gemini: {
     geminiApiKey: process.env.GEMINI_API_KEY!,
-    modelName: 'gemini-2.5-flash-lite',
-    // modelName: 'gemini-2.5-pro',
+    modelName: 'gemini-3-flash-preview',
     temperature: 0.1,
     bottleneckMaxConcurrent: 1,
     bottleneckMinTime: 2000,
