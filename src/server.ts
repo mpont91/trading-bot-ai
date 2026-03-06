@@ -1,12 +1,10 @@
-import express, { type Express } from 'express'
+import express, { type Express, Router } from 'express'
 import cors from 'cors'
-import routes from './infrastructure/web/routes'
 import { errorHandler } from './infrastructure/web/middleware/error-handler'
-import { Container } from './di'
+import { LoggerService } from './domain/services/logger-service'
 
-export const server = (): void => {
+export const server = (loggerService: LoggerService, router: Router): void => {
   const context = '🖥️  Server'
-  const loggerService = Container.getLoggerService()
   const app: Express = express()
   const port: string | number = process.env.PORT || 3000
 
@@ -17,7 +15,7 @@ export const server = (): void => {
   )
 
   app.use(express.json())
-  app.use('/', routes)
+  app.use('/', router)
   app.use(errorHandler)
 
   app.listen(port, (): void => {

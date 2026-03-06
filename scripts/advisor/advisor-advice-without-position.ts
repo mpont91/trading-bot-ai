@@ -1,11 +1,11 @@
-import { Container } from '../../di'
-import { ExchangeService } from '../../domain/services/exchange-service'
-import { Candle } from '../../domain/types/candle'
+import { Container } from '../../src/di'
+import { ExchangeService } from '../../src/domain/services/exchange-service'
+import { Candle } from '../../src/domain/types/candle'
 import { z } from 'zod'
-import { AnalystService } from '../../domain/services/analyst-service'
-import { Analysis } from '../../domain/types/analysis'
-import { AdvisorService } from '../../domain/services/advisor-service'
-import { Advice } from '../../domain/types/advice'
+import { AnalystService } from '../../src/domain/services/analyst-service'
+import { Analysis } from '../../src/domain/types/analysis'
+import { AdvisorService } from '../../src/domain/services/advisor-service'
+import { Advice } from '../../src/domain/types/advice'
 import { contextScript } from '../run'
 
 const requestSchema = z.object({

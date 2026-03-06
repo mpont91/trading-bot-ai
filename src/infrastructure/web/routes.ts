@@ -1,6 +1,5 @@
 import { type Request, type Response, Router } from 'express'
 import { EvaluationController } from './controllers/evaluation-controller'
-import { Container } from '../../di'
 import { OrderController } from './controllers/order-controller'
 import { asyncHandler } from './middleware/async-handler'
 import { PositionController } from './controllers/position-controller'
@@ -8,73 +7,48 @@ import { PerformanceController } from './controllers/performance-controller'
 import { PortfolioController } from './controllers/portfolio-controller'
 import { ActivityController } from './controllers/activity-controller'
 
-const evaluationController = new EvaluationController(
-  Container.getEvaluationRepository(),
-)
-const orderController = new OrderController(Container.getOrderRepository())
-const positionController = new PositionController(
-  Container.getPositionRepository(),
-)
-const performanceController = new PerformanceController(
-  Container.getPerformanceRepository(),
-)
-const portfolioController = new PortfolioController(
-  Container.getPortfolioService(),
-)
-const activityController = new ActivityController(
-  Container.getActivityRepository(),
-)
+export const createRouter = (
+  evaluationController: EvaluationController,
+  orderController: OrderController,
+  positionController: PositionController,
+  performanceController: PerformanceController,
+  portfolioController: PortfolioController,
+  activityController: ActivityController,
+): Router => {
+  const router: Router = Router()
 
-const router: Router = Router()
+  router.get('/', (_: Request, res: Response): void => {
+    res.send({})
+  })
 
-router.get('/', (_: Request, res: Response): void => {
-  res.send({})
-})
+  router.get('/uptime', (_: Request, res: Response): void => {
+    res.send({ data: process.uptime() })
+  })
 
-router.get('/uptime', (_: Request, res: Response): void => {
-  res.send({ data: process.uptime() })
-})
+  router.get(
+    '/evaluations',
+    asyncHandler((req, res) => evaluationController.getEvaluations(req, res)),
+  )
+  router.get(
+    '/orders',
+    asyncHandler((req, res) => orderController.getOrders(req, res)),
+  )
+  router.get(
+    '/positions',
+    asyncHandler((req, res) => positionController.getPositions(req, res)),
+  )
+  router.get(
+    '/performance',
+    asyncHandler((req, res) => performanceController.getPerformance(req, res)),
+  )
+  router.get(
+    '/portfolio',
+    asyncHandler((req, res) => portfolioController.getPortfolio(req, res)),
+  )
+  router.get(
+    '/activities',
+    asyncHandler((req, res) => activityController.getActivities(req, res)),
+  )
 
-router.get(
-  '/evaluations',
-  asyncHandler((request: Request, response: Response) =>
-    evaluationController.getEvaluations(request, response),
-  ),
-)
-
-router.get(
-  '/orders',
-  asyncHandler((request: Request, response: Response) =>
-    orderController.getOrders(request, response),
-  ),
-)
-
-router.get(
-  '/positions',
-  asyncHandler((request: Request, response: Response) =>
-    positionController.getPositions(request, response),
-  ),
-)
-
-router.get(
-  '/performance',
-  asyncHandler((request: Request, response: Response) =>
-    performanceController.getPerformance(request, response),
-  ),
-)
-
-router.get(
-  '/portfolio',
-  asyncHandler((request: Request, response: Response) =>
-    portfolioController.getPortfolio(request, response),
-  ),
-)
-
-router.get(
-  '/activities',
-  asyncHandler((request: Request, response: Response) =>
-    activityController.getActivities(request, response),
-  ),
-)
-
-export default router
+  return router
+}

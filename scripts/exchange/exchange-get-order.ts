@@ -1,6 +1,6 @@
-import { Container } from '../../di'
-import { ExchangeService } from '../../domain/services/exchange-service'
-import { Order } from '../../domain/types/order'
+import { Container } from '../../src/di'
+import { ExchangeService } from '../../src/domain/services/exchange-service'
+import { Order } from '../../src/domain/types/order'
 import { z } from 'zod'
 import { contextScript } from '../run'
 

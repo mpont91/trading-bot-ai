@@ -1,6 +1,6 @@
-import { Container } from '../../di'
-import { EvaluationRepository } from '../../application/repositories/evaluation-repository'
-import { Evaluation } from '../../domain/types/evaluation'
+import { Container } from '../../src/di'
+import { EvaluationRepository } from '../../src/application/repositories/evaluation-repository'
+import { Evaluation } from '../../src/domain/types/evaluation'
 import { contextScript } from '../run'
 
 export default async function (): Promise<void> {

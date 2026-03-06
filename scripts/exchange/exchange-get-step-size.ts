@@ -1,5 +1,5 @@
-import { Container } from '../../di'
-import { ExchangeService } from '../../domain/services/exchange-service'
+import { Container } from '../../src/di'
+import { ExchangeService } from '../../src/domain/services/exchange-service'
 import { z } from 'zod'
 import { contextScript } from '../run'
 
@@ -16,7 +16,7 @@ export default async function (args: string[]): Promise<void> {
 
   const loggerService = Container.getLoggerService()
   const exchangeService: ExchangeService = Container.getExchangeService()
-  const response: number = await exchangeService.getPrice(symbol)
+  const response: number = await exchangeService.getStepSize(symbol)
 
-  loggerService.debug(contextScript, `Price: $${response}`)
+  loggerService.debug(contextScript, `Step size: $${response}`)
 }

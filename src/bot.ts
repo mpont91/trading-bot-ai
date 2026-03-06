@@ -1,14 +1,16 @@
 import cron from 'node-cron'
-import { Container } from './di'
+import { Manager } from './application/manager'
+import { Settings } from './domain/types/settings'
+import { LoggerService } from './domain/services/logger-service'
 
 const context = '🤖  Bot'
 let isRunning = false
 
-export const bot = async (): Promise<void> => {
-  const loggerService = Container.getLoggerService()
-  const manager = Container.getManager()
-  const settings = Container.getSettings()
-
+export const bot = async (
+  loggerService: LoggerService,
+  manager: Manager,
+  settings: Settings,
+): Promise<void> => {
   loggerService.debug(
     context,
     `Trading bot scheduled via CRON (${settings.strategy.frecuencyCronExpression}).`,

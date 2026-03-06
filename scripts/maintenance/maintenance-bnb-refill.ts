@@ -1,5 +1,5 @@
-import { Container } from '../../di'
-import { MaintenanceService } from '../../domain/services/maintenance-service'
+import { Container } from '../../src/di'
+import { MaintenanceService } from '../../src/domain/services/maintenance-service'
 import { contextScript } from '../run'
 
 export default async function (): Promise<void> {

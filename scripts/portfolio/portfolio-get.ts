@@ -1,6 +1,6 @@
-import { Container } from '../../di'
-import { PortfolioService } from '../../domain/services/portfolio-service'
-import { Portfolio } from '../../domain/types/portfolio'
+import { Container } from '../../src/di'
+import { PortfolioService } from '../../src/domain/services/portfolio-service'
+import { Portfolio } from '../../src/domain/types/portfolio'
 import { contextScript } from '../run'
 
 export default async function (): Promise<void> {

@@ -1,6 +1,6 @@
-import { Container } from '../../di'
-import { ExchangeService } from '../../domain/services/exchange-service'
-import { type Coin } from '../../domain/types/coin'
+import { Container } from '../../src/di'
+import { ExchangeService } from '../../src/domain/services/exchange-service'
+import { type Coin } from '../../src/domain/types/coin'
 import { contextScript } from '../run'
 
 export default async function (): Promise<void> {

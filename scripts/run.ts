@@ -1,4 +1,4 @@
-import { Container } from '../di'
+import { Container } from '../src/di'
 
 type Fn = (args: string[]) => Promise<void>
 

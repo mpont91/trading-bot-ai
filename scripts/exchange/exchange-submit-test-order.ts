@@ -1,7 +1,7 @@
-import { Container } from '../../di'
+import { Container } from '../../src/di'
 import { z } from 'zod'
-import { OrderRequest, orderSideSchema } from '../../domain/types/order'
-import { ExchangeService } from '../../domain/services/exchange-service'
+import { OrderRequest, orderSideSchema } from '../../src/domain/types/order'
+import { ExchangeService } from '../../src/domain/services/exchange-service'
 import { contextScript } from '../run'
 
 const requestSchema = z.object({

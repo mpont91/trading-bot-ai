@@ -1,7 +1,7 @@
-import { Container } from '../../di'
-import { ExchangeService } from '../../domain/services/exchange-service'
-import { Settings } from '../../domain/types/settings'
-import { LoggerService } from '../../domain/services/logger-service'
+import { Container } from '../../src/di'
+import { ExchangeService } from '../../src/domain/services/exchange-service'
+import { Settings } from '../../src/domain/types/settings'
+import { LoggerService } from '../../src/domain/services/logger-service'
 
 const context = '🕹️  Script'
 const TEST_AMOUNT_USDC = 15

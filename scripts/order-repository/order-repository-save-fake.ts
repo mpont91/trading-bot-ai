@@ -1,6 +1,6 @@
-import { Container } from '../../di'
-import { OrderRepository } from '../../application/repositories/order-repository'
-import { Order } from '../../domain/types/order'
+import { Container } from '../../src/di'
+import { OrderRepository } from '../../src/application/repositories/order-repository'
+import { Order } from '../../src/domain/types/order'
 import { contextScript } from '../run'
 
 export default async function (): Promise<void> {
