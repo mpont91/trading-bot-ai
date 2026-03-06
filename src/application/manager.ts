@@ -11,6 +11,7 @@ import { TradingService } from '../domain/services/trading-service'
 import { PositionRepository } from './repositories/position-repository'
 import { MaintenanceService } from '../domain/services/maintenance-service'
 import { LoggerService } from '../domain/services/logger-service'
+import { settings } from './settings'
 
 type ExecutionResult = 'BOUGHT' | 'SOLD' | 'HELD' | 'IGNORED'
 
@@ -88,6 +89,7 @@ export class Manager {
 
     const advice: Advice = await this.advisorService.advice(
       symbol,
+      settings.strategy.timeFrame,
       analysis,
       position,
     )

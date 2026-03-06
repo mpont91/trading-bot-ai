@@ -3,6 +3,7 @@ import { Advice } from '../types/advice'
 import { Analysis } from '../types/analysis'
 import { Position } from '../types/position'
 import { LoggerService } from './logger-service'
+import { TimeFrame } from '../types/time-frame'
 
 export class AdvisorService {
   private readonly context = '🧠  Advisor-Service'
@@ -14,6 +15,7 @@ export class AdvisorService {
 
   async advice(
     symbol: string,
+    timeFrame: TimeFrame,
     analysis: Analysis,
     position: Position | null,
   ): Promise<Advice> {
@@ -22,7 +24,7 @@ export class AdvisorService {
         this.context,
         `Evaluating strategy advice for ${symbol}...`,
       )
-      return this.api.advice(symbol, analysis, position)
+      return this.api.advice(symbol, timeFrame, analysis, position)
     } catch (error) {
       this.loggerService.error(
         this.context,

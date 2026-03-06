@@ -22,6 +22,7 @@ export default async function (args: string[]): Promise<void> {
   const loggerService = Container.getLoggerService()
   const exchangeService: ExchangeService = Container.getExchangeService()
   const candles: Candle[] = await exchangeService.getCandles(symbol)
+  const settings = Container.getSettings()
 
   const analystService: AnalystService = Container.getAnalystService()
   const analysis: Analysis = analystService.calculate(candles)
@@ -30,6 +31,7 @@ export default async function (args: string[]): Promise<void> {
   const position = null
   const response: Advice = await advisorService.advice(
     symbol,
+    settings.strategy.timeFrame,
     analysis,
     position,
   )

@@ -13,6 +13,8 @@ export default async function (): Promise<void> {
   const symbol = 'BTCUSDC'
   const loggerService = Container.getLoggerService()
   const exchangeService: ExchangeService = Container.getExchangeService()
+  const settings = Container.getSettings()
+
   const candles: Candle[] = await exchangeService.getCandles(symbol)
   const currentPrice = candles[candles.length - 1].closePrice
 
@@ -23,6 +25,7 @@ export default async function (): Promise<void> {
   const position: Position = createFakePosition(symbol, currentPrice)
   const response: Advice = await advisorService.advice(
     symbol,
+    settings.strategy.timeFrame,
     analysis,
     position,
   )
