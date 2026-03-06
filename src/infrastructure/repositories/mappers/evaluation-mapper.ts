@@ -9,6 +9,7 @@ export class EvaluationMapper {
       id: raw.id,
       symbol: raw.symbol,
       model: raw.model,
+      thought: raw.thought,
       confidence: raw.confidence,
       reasoning: raw.reasoning,
       createdAt: raw.createdAt,

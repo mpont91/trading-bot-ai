@@ -19,6 +19,7 @@ export class PrismaEvaluationRepository implements EvaluationRepository {
         timeFrame: String(evaluation.timeFrame),
         price: evaluation.price,
         model: evaluation.model,
+        thought: evaluation.thought,
         action: evaluation.action,
         confidence: evaluation.confidence,
         reasoning: evaluation.reasoning,

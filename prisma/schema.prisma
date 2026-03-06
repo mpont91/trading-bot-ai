@@ -42,6 +42,7 @@ model Evaluation {
   price      Decimal
   action     AdviceAction
   confidence Float
+  thought    String       @default("") @db.Text
   reasoning  String       @db.Text
   model      String
   createdAt  DateTime     @default(now())

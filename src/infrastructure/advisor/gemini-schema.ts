@@ -4,6 +4,12 @@ export const geminiSchema: Schema = {
   description: 'Trading decision based on technical analysis',
   type: SchemaType.OBJECT,
   properties: {
+    thought: {
+      type: SchemaType.STRING,
+      description:
+        'Step-by-step analysis of the indicators, trend, and current situation. Think critically before deciding the action.',
+      nullable: false,
+    },
     action: {
       type: SchemaType.STRING,
       format: 'enum',
@@ -24,5 +30,5 @@ export const geminiSchema: Schema = {
       nullable: false,
     },
   },
-  required: ['action', 'confidence', 'reasoning'],
+  required: ['thought', 'action', 'confidence', 'reasoning'],
 }

@@ -6,6 +6,7 @@ export { AdviceAction }
 export const adviceActionSchema = z.enum(AdviceAction)
 
 export const adviceSchema = z.object({
+  thought: z.string(),
   action: adviceActionSchema,
   confidence: z.number().min(0).max(1),
   reasoning: z.string(),

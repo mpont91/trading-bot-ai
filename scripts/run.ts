@@ -19,11 +19,6 @@ const scripts: Record<string, Fn> = {
   'analyst-calculate': async (args: string[]) => {
     await (await import('./analyst/analyst-calculate')).default(args)
   },
-  'evaluation-repository-save-fake': async () => {
-    await (
-      await import('./evaluation-repository/evaluation-repository-save-fake')
-    ).default()
-  },
   'exchange-check-symbols': async () => {
     await (await import('./exchange/exchange-check-symbols')).default()
   },
