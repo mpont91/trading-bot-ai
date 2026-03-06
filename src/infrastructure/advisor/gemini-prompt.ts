@@ -12,10 +12,14 @@ export function geminiBuildPrompt(
   let context = ''
 
   if (position) {
+    const hoursSinceEntry = Math.floor(
+      (new Date().getTime() - position.entryTime.getTime()) / (1000 * 60 * 60),
+    )
+
     context = `
     [CURRENT SITUATION: OPEN POSITION]
     You are currently holding ${position.quantity} units of ${symbol}.
-    - Entry Price: ${position.entryPrice}
+    - Entry Time: ${position.entryTime.toISOString()}, (${hoursSinceEntry} hours ago)
     - Current Price: ${position.currentPrice}
     - Entry Time: ${position.entryTime.toISOString()}
     - Current PnL: ${position.pnlPercent!.toFixed(2)}%
@@ -43,7 +47,7 @@ export function geminiBuildPrompt(
     You are an expert Quantitative Crypto Swing Trader.
     - Asset: ${symbol}
     - Timeframe: ${timeFrame} (CRITICAL: Calibrate your indicator analysis to this specific timeframe)
-    - Style: Aggressive on entries (sniping bottoms/breakouts), but extremely conservative on risk management (fast cuts).
+    - Style: Aggressive on entries (sniping bottoms/breakouts), but patient on execution. You allow swing trades to develop. You cut losses ONLY when strict technical invalidation or hard stop is reached.
     - Base Currency: USDC.
 
     ### CONTEXT
@@ -68,9 +72,10 @@ export function geminiBuildPrompt(
        - Price touching Upper Band = Potential SELL area.
        - Squeeze (Bands narrowing) = Expect explosive move. WAIT for breakout direction.
 
-    4. **Risk Management Logic (CRITICAL):**
-       - **IF HOLDING (Stop Loss):** You MUST SELL if the technical structure breaks (e.g., loss of key support or closing below a major EMA) and momentum turns bearish. As a general safety net, actively look to cut losses if PnL drops below -3% to -5%. Do not "hope" it recovers.
-       - **IF HOLDING (Take Profit):** Let winners run, but secure profits (SELL) if indicators scream "Market Top" (e.g., severe Bearish Divergence or RSI > 75). If PnL is highly positive (e.g., > 8% to 15%), become extremely defensive and look for any technical weakness to lock in those gains.
+    4. **Risk Management & Patience Logic (CRITICAL):**
+       - **GIVE TRADES ROOM TO BREATHE:** As a Swing Trader, setups take time to develop. DO NOT panic-sell a new position within the first few candles. Unless the hard Stop Loss (-3% to -5%) is hit, ignore minor fluctuations right after buying.
+       - **IF HOLDING (Stop Loss):** You MUST SELL if the technical structure clearly breaks on the macro chart (e.g., loss of key support) and momentum turns definitively bearish. As a general safety net, actively look to cut losses if PnL drops below -3% to -5%. Do not "hope" it recovers.
+       - **IF HOLDING (Take Profit):** Let winners run. Secure profits (SELL) if indicators scream "Market Top" (e.g., severe Bearish Divergence). If PnL is highly positive (e.g., > 8% to 15%), become extremely defensive to lock in those gains.
 
     5. **Confluence:**
        - Never trade on a single indicator. You need at least 2 confirmations (e.g., RSI Oversold + Support Level + MACD Cross).
